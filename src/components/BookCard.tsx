@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Book } from '@/lib/types'
@@ -49,15 +48,13 @@ const GENRE_BADGE: Record<string, string> = {
 export default function BookCard({ book }: BookCardProps) {
   const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
   const badgeClass = GENRE_BADGE[book.genre] ?? GENRE_BADGE['Другое']
-  const { add } = useCart()
-  const [added, setAdded] = useState(false)
+  const { add, items } = useCart()
+  const inCart = items.some((i) => i.id === book.id)
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     add(book)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1500)
   }
 
   return (
@@ -112,13 +109,18 @@ export default function BookCard({ book }: BookCardProps) {
           </div>
           <button
             onClick={handleAdd}
-            className={`text-xs py-1.5 px-3 rounded-xl font-semibold transition-all duration-200 active:scale-95 ${
-              added
-                ? 'bg-emerald-500 text-white'
-                : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm'
+            aria-label={inCart ? 'Добавлено в корзину' : 'В корзину'}
+            className={`flex items-center justify-center text-xs rounded-xl font-semibold transition-all duration-200 active:scale-95 ${
+              inCart
+                ? 'bg-emerald-500 text-white w-9 h-9'
+                : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm py-1.5 px-3'
             }`}
           >
-            {added ? '✓ Добавлено' : 'В корзину'}
+            {inCart ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            ) : 'В корзину'}
           </button>
         </div>
       </div>
