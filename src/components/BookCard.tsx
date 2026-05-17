@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import { Book } from '@/lib/types'
+import { useCart } from '@/lib/cart'
 
 interface BookCardProps {
   book: Book
@@ -46,6 +48,14 @@ const GENRE_BADGE: Record<string, string> = {
 export default function BookCard({ book }: BookCardProps) {
   const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
   const badgeClass = GENRE_BADGE[book.genre] ?? GENRE_BADGE['Другое']
+  const { add } = useCart()
+  const [added, setAdded] = useState(false)
+
+  const handleAdd = () => {
+    add(book)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1500)
+  }
 
   return (
     <div className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
@@ -94,8 +104,15 @@ export default function BookCard({ book }: BookCardProps) {
             </span>
             <span className="text-sm text-gray-500 ml-1">€</span>
           </div>
-          <button className="btn-primary text-xs py-1.5 px-3">
-            В корзину
+          <button
+            onClick={handleAdd}
+            className={`text-xs py-1.5 px-3 rounded-xl font-semibold transition-all duration-200 active:scale-95 ${
+              added
+                ? 'bg-emerald-500 text-white'
+                : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm'
+            }`}
+          >
+            {added ? '✓ Добавлено' : 'В корзину'}
           </button>
         </div>
       </div>
