@@ -38,12 +38,14 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   }, [open])
 
   const formatPhone = (v: string) => {
+    // Keep only "+" (only at start) and digits, up to 15 digits (E.164 max)
+    const hasPlus = v.trim().startsWith('+')
     const digits = v.replace(/\D/g, '').slice(0, 15)
     if (!digits) return ''
-    return '+' + digits
+    return (hasPlus ? '+' : '') + digits
   }
 
-  const isPhoneValid = phone.replace(/\D/g, '').length >= 10
+  const isPhoneValid = phone.replace(/\D/g, '').length >= 7
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -226,11 +228,14 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   required
                   value={phone}
                   onChange={(e) => setPhone(formatPhone(e.target.value))}
-                  placeholder="+380 __ ___ __ __"
+                  placeholder="+33 6 12 34 56 78"
                   className="input-field text-base py-3"
                   autoFocus
+                  inputMode="tel"
                 />
-                <p className="text-xs text-gray-400 mt-2">Оператор перезвонит в течение 15 минут</p>
+                <p className="text-xs text-gray-400 mt-2">
+                  Укажите номер с кодом страны. Оператор перезвонит в течение 15 минут.
+                </p>
               </div>
 
               <div>
