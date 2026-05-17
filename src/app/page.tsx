@@ -4,6 +4,7 @@ import BookCard from '@/components/BookCard'
 import FilterPanel from '@/components/FilterPanel'
 import SearchBar from '@/components/SearchBar'
 import CartButton from '@/components/CartButton'
+import SortSelect from '@/components/SortSelect'
 import { Book } from '@/lib/types'
 
 interface SearchParams {
@@ -12,11 +13,21 @@ interface SearchParams {
   minPrice?: string
   maxPrice?: string
   author?: string
+  sort?: string
 }
 
 async function getBooks(filters: SearchParams): Promise<Book[]> {
   const supabase = await createClient()
-  let query = supabase.from('books').select('*').order('created_at', { ascending: false })
+
+  const sortMap: Record<string, { column: string; ascending: boolean }> = {
+    newest:     { column: 'created_at', ascending: false },
+    price_asc:  { column: 'price',      ascending: true },
+    price_desc: { column: 'price',      ascending: false },
+    title_asc:  { column: 'title',      ascending: true },
+  }
+  const { column, ascending } = sortMap[filters.sort ?? 'newest'] ?? sortMap.newest
+
+  let query = supabase.from('books').select('*').order(column, { ascending })
 
   if (filters.search) query = query.ilike('title', `%${filters.search}%`)
   if (filters.genre) query = query.eq('genre', filters.genre)
@@ -102,6 +113,9 @@ export default async function CatalogPage({
                   {books.length === 0 ? 'Ничего не найдено' : `${books.length} книг`}
                 </p>
               </div>
+              <Suspense fallback={null}>
+                <SortSelect />
+              </Suspense>
             </div>
 
             {books.length === 0 ? (

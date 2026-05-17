@@ -51,7 +51,7 @@ export default function SearchBar() {
         placeholder="Поиск по названию, автору..."
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-full pl-12 pr-5 py-4 rounded-2xl text-base text-gray-900 placeholder-gray-400 bg-white/95 backdrop-blur-sm border-2 border-transparent focus:border-accent-400 focus:outline-none shadow-lg hover:shadow-xl transition-all duration-200"
+        className="w-full pl-12 pr-10 py-4 rounded-2xl text-base text-gray-900 placeholder-gray-400 bg-white/95 backdrop-blur-sm border-2 border-transparent focus:border-accent-400 focus:outline-none shadow-lg hover:shadow-xl transition-all duration-200 [&::-webkit-search-cancel-button]:hidden [&::-ms-clear]:hidden"
       />
       {value && (
         <button

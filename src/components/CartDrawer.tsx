@@ -64,9 +64,16 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
     setSubmitting(false)
     if (error) {
-      setError('Не удалось оформить заказ. Попробуйте ещё раз.')
+      console.error('Order insert error:', error)
+      setError(`Не удалось оформить заказ: ${error.message}`)
       return
     }
+
+    fetch('/api/notify-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: phone.trim(), name: name.trim() || null, items, total }),
+    }).catch(() => {})
 
     clear()
     setStep('success')
