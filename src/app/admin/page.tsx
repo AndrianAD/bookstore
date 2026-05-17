@@ -227,7 +227,7 @@ export default function AdminPage() {
                           <span className="badge bg-accent-50 text-accent-700">{book.genre}</span>
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <span className="font-bold text-gray-900">{book.price.toLocaleString('ru-RU')} ₽</span>
+                          <span className="font-bold text-gray-900">{book.price.toLocaleString('ru-RU')} €</span>
                         </td>
                         <td className="px-5 py-4 text-right">
                           <div className="flex items-center justify-end gap-1">

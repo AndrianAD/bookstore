@@ -24,7 +24,7 @@ export default function SearchBar() {
       }
       params.delete('page')
       startTransition(() => {
-        router.push(`${pathname}?${params.toString()}`)
+        router.push(`${pathname}?${params.toString()}`, { scroll: false })
       })
     },
     [pathname, router, searchParams]

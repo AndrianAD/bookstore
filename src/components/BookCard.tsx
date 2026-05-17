@@ -92,7 +92,7 @@ export default function BookCard({ book }: BookCardProps) {
             <span className="text-xl font-bold text-gray-900">
               {book.price.toLocaleString('ru-RU')}
             </span>
-            <span className="text-sm text-gray-500 ml-1">₽</span>
+            <span className="text-sm text-gray-500 ml-1">€</span>
           </div>
           <button className="btn-primary text-xs py-1.5 px-3">
             В корзину

@@ -25,11 +25,11 @@ export default function FilterPanel() {
 
   const handleChange = (key: string, value: string) => {
     startTransition(() => {
-      router.push(`${pathname}?${createQueryString({ [key]: value })}`)
+      router.push(`${pathname}?${createQueryString({ [key]: value })}`, { scroll: false })
     })
   }
 
-  const handleReset = () => startTransition(() => router.push(pathname))
+  const handleReset = () => startTransition(() => router.push(pathname, { scroll: false }))
 
   const hasFilters =
     searchParams.get('genre') ||
@@ -102,7 +102,7 @@ export default function FilterPanel() {
           {/* Price */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Цена, ₽
+              Цена, €
             </label>
             <div className="flex items-center gap-2">
               <input
