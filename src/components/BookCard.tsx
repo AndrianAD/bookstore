@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Book } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
@@ -51,14 +52,19 @@ export default function BookCard({ book }: BookCardProps) {
   const { add } = useCart()
   const [added, setAdded] = useState(false)
 
-  const handleAdd = () => {
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     add(book)
     setAdded(true)
     setTimeout(() => setAdded(false), 1500)
   }
 
   return (
-    <div className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
+    <Link
+      href={`/book/${book.id}`}
+      className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
+    >
       {/* Cover */}
       <div className="relative aspect-[2/3] overflow-hidden">
         {book.image_url ? (
@@ -116,6 +122,6 @@ export default function BookCard({ book }: BookCardProps) {
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
