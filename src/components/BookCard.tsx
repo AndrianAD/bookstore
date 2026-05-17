@@ -110,10 +110,10 @@ export default function BookCard({ book }: BookCardProps) {
           <button
             onClick={handleAdd}
             aria-label={inCart ? 'Добавлено в корзину' : 'В корзину'}
-            className={`flex items-center justify-center text-xs rounded-xl font-semibold transition-all duration-200 active:scale-95 ${
+            className={`flex items-center justify-center text-xs rounded-xl font-semibold transition-all duration-200 active:scale-95 h-8 px-3 min-w-[32px] ${
               inCart
-                ? 'bg-emerald-500 text-white w-9 h-9'
-                : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm py-1.5 px-3'
+                ? 'bg-emerald-500 text-white'
+                : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm'
             }`}
           >
             {inCart ? (
