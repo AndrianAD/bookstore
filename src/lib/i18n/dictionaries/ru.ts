@@ -45,6 +45,7 @@ export const ru = {
   common: {
     all: 'Все',
     cancel: 'Отмена',
+    close: 'Закрыть',
     delete: 'Удалить',
     edit: 'Редактировать',
     loading: 'Загрузка...',
@@ -72,6 +73,7 @@ export const ru = {
     condition: 'Состояние',
     genre: 'Жанр',
     updating: 'Обновление каталога...',
+    showResults: (n: number) => (n === 0 ? 'Ничего не найдено' : `Показать ${books(n)}`),
   },
   book: {
     author: 'Автор',

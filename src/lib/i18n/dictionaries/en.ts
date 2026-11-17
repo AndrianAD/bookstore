@@ -46,6 +46,7 @@ export const en: Dictionary = {
   common: {
     all: 'All',
     cancel: 'Cancel',
+    close: 'Close',
     delete: 'Delete',
     edit: 'Edit',
     loading: 'Loading...',
@@ -73,6 +74,7 @@ export const en: Dictionary = {
     condition: 'Condition',
     genre: 'Genre',
     updating: 'Updating catalog...',
+    showResults: (n: number) => (n === 0 ? 'Nothing found' : `Show ${books(n)}`),
   },
   book: {
     author: 'Author',

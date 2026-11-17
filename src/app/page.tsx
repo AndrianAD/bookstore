@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import BookCard from '@/components/BookCard'
 import FilterPanel from '@/components/FilterPanel'
+import MobileFilters from '@/components/MobileFilters'
 import SearchBar from '@/components/SearchBar'
 import CartButton from '@/components/CartButton'
 import SortSelect from '@/components/SortSelect'
@@ -106,22 +107,27 @@ export default async function CatalogPage({
       {/* ── CATALOG ── */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-10">
         <div className="flex flex-col lg:flex-row gap-8">
-          <Suspense fallback={<aside className="w-full lg:w-72 shrink-0"><div className="bg-white rounded-2xl shadow-card p-6 h-64 animate-pulse" /></aside>}>
+          <Suspense fallback={<aside className="hidden lg:block w-72 shrink-0"><div className="bg-white rounded-2xl shadow-card p-6 h-64 animate-pulse" /></aside>}>
             <FilterPanel />
           </Suspense>
 
           <div className="flex-1 min-w-0">
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">{t.catalog.title}</h2>
                 <p className="text-gray-400 text-sm mt-0.5">
                   {books.length === 0 ? t.catalog.empty : t.catalog.count(books.length)}
                 </p>
               </div>
-              <Suspense fallback={null}>
-                <SortSelect />
-              </Suspense>
+              <div className="flex items-center justify-between gap-2 sm:justify-end">
+                <Suspense fallback={null}>
+                  <MobileFilters resultsCount={books.length} />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <SortSelect />
+                </Suspense>
+              </div>
             </div>
 
             {books.length === 0 ? (

@@ -46,6 +46,7 @@ export const uk: Dictionary = {
   common: {
     all: 'Усі',
     cancel: 'Скасувати',
+    close: 'Закрити',
     delete: 'Видалити',
     edit: 'Редагувати',
     loading: 'Завантаження...',
@@ -73,6 +74,7 @@ export const uk: Dictionary = {
     condition: 'Стан',
     genre: 'Жанр',
     updating: 'Оновлення каталогу...',
+    showResults: (n: number) => (n === 0 ? 'Нічого не знайдено' : `Показати ${books(n)}`),
   },
   book: {
     author: 'Автор',
