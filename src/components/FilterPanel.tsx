@@ -36,19 +36,8 @@ export default function FilterPanel() {
 
   const handleReset = () => startTransition(() => router.push(pathname, { scroll: false }))
 
-  const hasFilters =
-    searchParams.get('condition') ||
-    searchParams.get('genre') ||
-    searchParams.get('minPrice') ||
-    searchParams.get('maxPrice') ||
-    searchParams.get('author')
-
-  const activeCount = [
-    searchParams.get('condition'),
-    searchParams.get('genre'),
-    searchParams.get('minPrice') || searchParams.get('maxPrice'),
-    searchParams.get('author'),
-  ].filter(Boolean).length
+  const activeCount = [searchParams.get('condition'), searchParams.get('genre')].filter(Boolean).length
+  const hasFilters = activeCount > 0
 
   return (
     <aside className="w-full lg:w-72 shrink-0">
@@ -127,54 +116,6 @@ export default function FilterPanel() {
                   </button>
                 )
               })}
-            </div>
-          </div>
-
-          {/* Price */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              {t.filters.price}
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                placeholder={t.filters.priceFrom}
-                min={0}
-                value={searchParams.get('minPrice') || ''}
-                onChange={(e) => handleChange('minPrice', e.target.value)}
-                className="input-field text-center"
-                disabled={isPending}
-              />
-              <span className="text-gray-400 shrink-0">—</span>
-              <input
-                type="number"
-                placeholder={t.filters.priceTo}
-                min={0}
-                value={searchParams.get('maxPrice') || ''}
-                onChange={(e) => handleChange('maxPrice', e.target.value)}
-                className="input-field text-center"
-                disabled={isPending}
-              />
-            </div>
-          </div>
-
-          {/* Author */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              {t.filters.author}
-            </label>
-            <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <input
-                type="text"
-                placeholder={t.filters.authorPlaceholder}
-                value={searchParams.get('author') || ''}
-                onChange={(e) => handleChange('author', e.target.value)}
-                className="input-field pl-9"
-                disabled={isPending}
-              />
             </div>
           </div>
         </div>

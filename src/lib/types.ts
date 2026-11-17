@@ -59,9 +59,6 @@ export interface BookFilters {
   search: string
   genre: string
   condition: string
-  minPrice: string
-  maxPrice: string
-  author: string
 }
 
 export interface CartItem {

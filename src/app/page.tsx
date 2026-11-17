@@ -12,10 +12,12 @@ interface SearchParams {
   search?: string
   genre?: string
   condition?: string
-  minPrice?: string
-  maxPrice?: string
-  author?: string
   sort?: string
+}
+
+/** Characters that would break a PostgREST `or` filter expression. */
+function toSearchPattern(term: string) {
+  return `%${term.replace(/[,()%*\\]/g, ' ').trim()}%`
 }
 
 async function getBooks(filters: SearchParams): Promise<Book[]> {
@@ -31,12 +33,12 @@ async function getBooks(filters: SearchParams): Promise<Book[]> {
 
   let query = supabase.from('books').select('*').order(column, { ascending })
 
-  if (filters.search) query = query.ilike('title', `%${filters.search}%`)
+  if (filters.search?.trim()) {
+    const pattern = toSearchPattern(filters.search)
+    query = query.or(`title.ilike.${pattern},author.ilike.${pattern}`)
+  }
   if (filters.genre) query = query.eq('genre', filters.genre)
   if (isBookCondition(filters.condition)) query = query.eq('condition', filters.condition)
-  if (filters.minPrice) query = query.gte('price', parseFloat(filters.minPrice))
-  if (filters.maxPrice) query = query.lte('price', parseFloat(filters.maxPrice))
-  if (filters.author) query = query.ilike('author', `%${filters.author}%`)
 
   const { data, error } = await query
   if (error) { console.error(error); return [] }

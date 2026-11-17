@@ -72,11 +72,6 @@ export const uk: Dictionary = {
     reset: 'Скинути',
     condition: 'Стан',
     genre: 'Жанр',
-    price: 'Ціна',
-    priceFrom: 'Від',
-    priceTo: 'До',
-    author: 'Автор',
-    authorPlaceholder: "Ім'я автора...",
     updating: 'Оновлення каталогу...',
   },
   book: {

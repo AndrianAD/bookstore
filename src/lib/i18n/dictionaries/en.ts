@@ -72,11 +72,6 @@ export const en: Dictionary = {
     reset: 'Reset',
     condition: 'Condition',
     genre: 'Genre',
-    price: 'Price',
-    priceFrom: 'From',
-    priceTo: 'To',
-    author: 'Author',
-    authorPlaceholder: 'Author name...',
     updating: 'Updating catalog...',
   },
   book: {

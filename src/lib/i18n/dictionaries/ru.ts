@@ -71,11 +71,6 @@ export const ru = {
     reset: 'Сбросить',
     condition: 'Состояние',
     genre: 'Жанр',
-    price: 'Цена',
-    priceFrom: 'От',
-    priceTo: 'До',
-    author: 'Автор',
-    authorPlaceholder: 'Имя автора...',
     updating: 'Обновление каталога...',
   },
   book: {
