@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { BookChannelSync, BookNotFoundError } from '@/lib/books/book-channel-sync'
 import { MissingMigrationError, SupabaseBookRepository } from '@/lib/books/book-repository'
+import { getDictionary } from '@/lib/i18n'
+import { readSiteLocale } from '@/lib/settings/site-settings'
 import { createClient } from '@/lib/supabase/server'
 import { TelegramChannelPublisher } from '@/lib/telegram/channel-publisher'
 import { TelegramClient } from '@/lib/telegram/client'
@@ -31,6 +33,7 @@ export async function POST(req: NextRequest) {
     new SupabaseBookRepository(supabase),
     new TelegramChannelPublisher(new TelegramClient(botToken), channelId),
     req.nextUrl.origin,
+    getDictionary(await readSiteLocale(supabase)),
   )
   const request = (await req.json()) as ChannelSyncRequest
 

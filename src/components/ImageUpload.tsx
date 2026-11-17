@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import Image from 'next/image'
+import { useI18n } from '@/lib/i18n/client'
 import { createClient } from '@/lib/supabase/client'
 
 interface ImageUploadProps {
@@ -12,14 +13,15 @@ interface ImageUploadProps {
 export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const { t } = useI18n()
 
   const uploadFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      alert('Пожалуйста, выберите изображение')
+      alert(t.imageUpload.notImage)
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      alert('Файл слишком большой. Максимум 5 МБ')
+      alert(t.imageUpload.tooLarge)
       return
     }
 
@@ -42,7 +44,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
       onChange(data.publicUrl)
     } catch (err) {
       console.error(err)
-      alert('Ошибка загрузки. Проверьте настройки Supabase Storage.')
+      alert(t.imageUpload.failed)
     } finally {
       setUploading(false)
     }
@@ -73,7 +75,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
           <div className="relative w-full aspect-[3/2] rounded-lg overflow-hidden border border-gray-200">
             <Image
               src={value}
-              alt="Обложка книги"
+              alt={t.imageUpload.coverAlt}
               fill
               className="object-cover"
             />
@@ -109,7 +111,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
           {uploading ? (
             <div className="flex flex-col items-center gap-2">
               <div className="w-8 h-8 border-3 border-accent-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-gray-500">Загрузка...</span>
+              <span className="text-sm text-gray-500">{t.common.loading}</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 text-center px-4">
@@ -117,10 +119,10 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <div>
-                <span className="text-sm font-medium text-accent-600">Нажмите для загрузки</span>
-                <span className="text-sm text-gray-500"> или перетащите</span>
+                <span className="text-sm font-medium text-accent-600">{t.imageUpload.click}</span>
+                <span className="text-sm text-gray-500">{t.imageUpload.orDrop}</span>
               </div>
-              <span className="text-xs text-gray-400">PNG, JPG, WEBP до 5 МБ</span>
+              <span className="text-xs text-gray-400">{t.imageUpload.formats}</span>
             </div>
           )}
         </label>

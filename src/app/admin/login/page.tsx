@@ -2,10 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/lib/i18n/client'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -21,7 +23,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      setError('Неверный email или пароль')
+      setError(t.login.invalid)
       setLoading(false)
       return
     }
@@ -46,8 +48,8 @@ export default function LoginPage() {
               </svg>
             </div>
           </a>
-          <h1 className="text-3xl font-extrabold text-white mb-2">С возвращением</h1>
-          <p className="text-white/50">Войдите в панель управления</p>
+          <h1 className="text-3xl font-extrabold text-white mb-2">{t.login.title}</h1>
+          <p className="text-white/50">{t.login.subtitle}</p>
         </div>
 
         {/* Card */}
@@ -70,7 +72,7 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-sm font-semibold text-white/80 mb-2">
-                Пароль
+                {t.login.password}
               </label>
               <div className="relative">
                 <input
@@ -118,10 +120,10 @@ export default function LoginPage() {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
-                  Входим...
+                  {t.login.submitting}
                 </span>
               ) : (
-                'Войти в панель'
+                t.login.submit
               )}
             </button>
           </form>
@@ -132,7 +134,7 @@ export default function LoginPage() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Вернуться в магазин
+            {t.login.backToShop}
           </a>
         </p>
       </div>

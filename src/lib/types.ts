@@ -2,17 +2,20 @@ import type { Currency } from './money'
 
 export type BookCondition = 'new' | 'used'
 
-export const BOOK_CONDITIONS: Record<BookCondition, { label: string; badge: string }> = {
-  new:  { label: 'Новая', badge: 'bg-emerald-100 text-emerald-700' },
-  used: { label: 'Б/у',   badge: 'bg-amber-100 text-amber-700' },
+export const CONDITION_BADGES: Record<BookCondition, string> = {
+  new:  'bg-emerald-100 text-emerald-700',
+  used: 'bg-amber-100 text-amber-700',
 }
+
+export const BOOK_CONDITION_CODES = Object.keys(CONDITION_BADGES) as BookCondition[]
 
 export function isBookCondition(value: unknown): value is BookCondition {
-  return typeof value === 'string' && value in BOOK_CONDITIONS
+  return typeof value === 'string' && value in CONDITION_BADGES
 }
 
-export function conditionOf(book: Pick<Book, 'condition'>) {
-  return BOOK_CONDITIONS[book.condition] ?? BOOK_CONDITIONS.new
+/** Rows saved before the condition column existed have no condition. */
+export function conditionOf(book: Pick<Book, 'condition'>): BookCondition {
+  return isBookCondition(book.condition) ? book.condition : 'new'
 }
 
 export interface Book {
@@ -84,9 +87,11 @@ export interface Order {
   created_at: string
 }
 
-export const ORDER_STATUSES: Record<OrderStatus, { label: string; color: string }> = {
-  new:       { label: 'Новый',     color: 'bg-blue-100 text-blue-700' },
-  called:    { label: 'Перезвонили', color: 'bg-amber-100 text-amber-700' },
-  completed: { label: 'Завершён',  color: 'bg-emerald-100 text-emerald-700' },
-  cancelled: { label: 'Отменён',   color: 'bg-red-100 text-red-700' },
+export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
+  new:       'bg-blue-100 text-blue-700',
+  called:    'bg-amber-100 text-amber-700',
+  completed: 'bg-emerald-100 text-emerald-700',
+  cancelled: 'bg-red-100 text-red-700',
 }
+
+export const ORDER_STATUS_CODES = Object.keys(ORDER_STATUS_COLORS) as OrderStatus[]

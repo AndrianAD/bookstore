@@ -2,13 +2,17 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { LOCALES } from '@/lib/i18n'
+import { useI18n } from '@/lib/i18n/client'
 import { formatPrice, formatTotals, lineTotal } from '@/lib/money'
 import { createClient } from '@/lib/supabase/client'
-import { Order, OrderStatus, ORDER_STATUSES } from '@/lib/types'
+import { ORDER_STATUS_CODES, ORDER_STATUS_COLORS, Order, OrderStatus } from '@/lib/types'
 import AdminSidebar from '@/components/AdminSidebar'
 
 export default function OrdersPage() {
   const router = useRouter()
+  const { locale, t } = useI18n()
+  const dateLocale = LOCALES[locale].intl
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [userEmail, setUserEmail] = useState('')
@@ -41,15 +45,15 @@ export default function OrdersPage() {
 
   const updateStatus = async (id: string, status: OrderStatus) => {
     const { error } = await supabase.from('orders').update({ status }).eq('id', id)
-    if (error) { alert('Ошибка: ' + error.message); return }
+    if (error) { alert(t.common.error(error.message)); return }
     fetchOrders()
     if (activeOrder?.id === id) setActiveOrder({ ...activeOrder, status })
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Удалить заказ?')) return
+    if (!confirm(t.orders.confirmDelete)) return
     const { error } = await supabase.from('orders').delete().eq('id', id)
-    if (error) { alert('Ошибка: ' + error.message); return }
+    if (error) { alert(t.common.error(error.message)); return }
     fetchOrders()
     setActiveOrder(null)
   }
@@ -80,27 +84,22 @@ export default function OrdersPage() {
         <main className="flex-1 lg:ml-64 min-h-screen">
           <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Заказы</h1>
-              <p className="text-gray-400 text-sm">{loading ? '...' : `${orders.length} заказов всего`}</p>
+              <h1 className="text-xl font-bold text-gray-900">{t.orders.title}</h1>
+              <p className="text-gray-400 text-sm">{loading ? '...' : t.orders.totalCount(orders.length)}</p>
             </div>
           </header>
 
           <div className="p-6">
             {/* Status tabs */}
             <div className="flex flex-wrap gap-2 mb-6">
-              {([
-                ['all', 'Все'],
-                ['new', ORDER_STATUSES.new.label],
-                ['called', ORDER_STATUSES.called.label],
-                ['completed', ORDER_STATUSES.completed.label],
-                ['cancelled', ORDER_STATUSES.cancelled.label],
-              ] as const).map(([key, label]) => {
+              {(['all', ...ORDER_STATUS_CODES] as const).map((key) => {
+                const label = key === 'all' ? t.common.all : t.orderStatuses[key]
                 const isActive = statusFilter === key
-                const count = counts[key as keyof typeof counts]
+                const count = counts[key]
                 return (
                   <button
                     key={key}
-                    onClick={() => setStatusFilter(key as OrderStatus | 'all')}
+                    onClick={() => setStatusFilter(key)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-accent-500 text-white shadow-glow-sm'
@@ -127,8 +126,8 @@ export default function OrdersPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-700 mb-1">Заказов нет</h3>
-                <p className="text-gray-400 text-sm">Когда поступят заказы, они появятся здесь</p>
+                <h3 className="text-lg font-bold text-gray-700 mb-1">{t.orders.empty}</h3>
+                <p className="text-gray-400 text-sm">{t.orders.emptyHint}</p>
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-card overflow-hidden">
@@ -136,17 +135,17 @@ export default function OrdersPage() {
                   <thead>
                     <tr className="border-b border-gray-100">
                       <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">#</th>
-                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Клиент</th>
-                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">Товары</th>
-                      <th className="text-right px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Сумма</th>
-                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Статус</th>
-                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Дата</th>
+                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.orders.columns.customer}</th>
+                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">{t.orders.columns.items}</th>
+                      <th className="text-right px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.orders.columns.sum}</th>
+                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.orders.columns.status}</th>
+                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">{t.orders.columns.date}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {filtered.map((order) => {
                       const itemsCount = order.items.reduce((s, i) => s + i.quantity, 0)
-                      const statusInfo = ORDER_STATUSES[order.status]
+                      const statusColor = ORDER_STATUS_COLORS[order.status]
                       return (
                         <tr
                           key={order.id}
@@ -161,7 +160,7 @@ export default function OrdersPage() {
                           <td className="px-5 py-4">
                             <div>
                               <p className="font-semibold text-gray-900">
-                                {order.customer_name || 'Без имени'}
+                                {order.customer_name || t.orders.noName}
                               </p>
                               <a
                                 href={`tel:${order.phone}`}
@@ -177,7 +176,7 @@ export default function OrdersPage() {
                               {order.items.map((i) => i.title).join(', ')}
                             </p>
                             <p className="text-xs text-gray-400 mt-0.5">
-                              {itemsCount} {itemsCount === 1 ? 'товар' : 'товаров'}
+                              {t.orders.itemsCount(itemsCount)}
                             </p>
                           </td>
                           <td className="px-5 py-4 text-right">
@@ -186,12 +185,12 @@ export default function OrdersPage() {
                             </span>
                           </td>
                           <td className="px-5 py-4">
-                            <span className={`badge ${statusInfo.color}`}>
-                              {statusInfo.label}
+                            <span className={`badge ${statusColor}`}>
+                              {t.orderStatuses[order.status]}
                             </span>
                           </td>
                           <td className="px-5 py-4 hidden lg:table-cell text-gray-500 text-xs">
-                            {new Date(order.created_at).toLocaleString('ru-RU', {
+                            {new Date(order.created_at).toLocaleString(dateLocale, {
                               day: '2-digit', month: '2-digit', year: '2-digit',
                               hour: '2-digit', minute: '2-digit',
                             })}
@@ -217,9 +216,9 @@ export default function OrdersPage() {
           <div className="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] bg-white z-50 shadow-2xl flex flex-col animate-slide-up">
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <div>
-                <h2 className="font-bold text-gray-900">Заказ #{activeOrder.id.slice(0, 8)}</h2>
+                <h2 className="font-bold text-gray-900">{t.orders.order(activeOrder.id.slice(0, 8))}</h2>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  {new Date(activeOrder.created_at).toLocaleString('ru-RU')}
+                  {new Date(activeOrder.created_at).toLocaleString(dateLocale)}
                 </p>
               </div>
               <button
@@ -235,16 +234,16 @@ export default function OrdersPage() {
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
               {/* Customer */}
               <div className="bg-gray-50 rounded-2xl p-4">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Клиент</h3>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{t.orders.customer}</h3>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Имя</span>
+                    <span className="text-sm text-gray-500">{t.orders.name}</span>
                     <span className="text-sm font-semibold text-gray-900">
                       {activeOrder.customer_name || '—'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Телефон</span>
+                    <span className="text-sm text-gray-500">{t.orders.phone}</span>
                     <a href={`tel:${activeOrder.phone}`} className="text-sm font-bold text-accent-600 hover:underline">
                       {activeOrder.phone}
                     </a>
@@ -257,14 +256,14 @@ export default function OrdersPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  Позвонить
+                  {t.orders.call}
                 </a>
               </div>
 
               {/* Items */}
               <div>
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                  Товары ({activeOrder.items.length})
+                  {t.orders.items(activeOrder.items.length)}
                 </h3>
                 <div className="space-y-2">
                   {activeOrder.items.map((item) => (
@@ -285,7 +284,7 @@ export default function OrdersPage() {
                   ))}
                 </div>
                 <div className="flex items-baseline justify-between mt-4 pt-4 border-t border-gray-100">
-                  <span className="text-sm font-semibold text-gray-700">Итого</span>
+                  <span className="text-sm font-semibold text-gray-700">{t.orders.total}</span>
                   <span className="text-2xl font-extrabold text-gray-900">
                     {formatTotals(activeOrder.items)}
                   </span>
@@ -294,10 +293,9 @@ export default function OrdersPage() {
 
               {/* Status */}
               <div>
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Статус</h3>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{t.orders.status}</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {(Object.keys(ORDER_STATUSES) as OrderStatus[]).map((s) => {
-                    const info = ORDER_STATUSES[s]
+                  {ORDER_STATUS_CODES.map((s) => {
                     const active = activeOrder.status === s
                     return (
                       <button
@@ -306,10 +304,10 @@ export default function OrdersPage() {
                         className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                           active
                             ? 'bg-accent-500 text-white shadow-glow-sm'
-                            : `${info.color} hover:opacity-80`
+                            : `${ORDER_STATUS_COLORS[s]} hover:opacity-80`
                         }`}
                       >
-                        {info.label}
+                        {t.orderStatuses[s]}
                       </button>
                     )
                   })}
@@ -322,7 +320,7 @@ export default function OrdersPage() {
                 onClick={() => handleDelete(activeOrder.id)}
                 className="w-full text-sm text-red-600 hover:bg-red-50 py-2.5 rounded-xl transition-colors"
               >
-                Удалить заказ
+                {t.orders.delete}
               </button>
             </div>
           </div>

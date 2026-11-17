@@ -3,12 +3,15 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { genreLabel } from '@/lib/i18n'
+import { useI18n } from '@/lib/i18n/client'
 import { formatPrice } from '@/lib/money'
 import { createClient } from '@/lib/supabase/client'
 import { useChannelSync } from '@/lib/telegram/use-channel-sync'
 import { Book, BookInsert } from '@/lib/types'
 import BookForm from '@/components/BookForm'
 import AdminSidebar from '@/components/AdminSidebar'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 type Modal = { mode: 'add' } | { mode: 'edit'; book: Book } | null
 
@@ -22,6 +25,7 @@ export default function AdminPage() {
   const [search, setSearch] = useState('')
   const [newOrdersCount, setNewOrdersCount] = useState(0)
   const channel = useChannelSync()
+  const { t } = useI18n()
 
   const supabase = createClient()
 
@@ -58,7 +62,7 @@ export default function AdminPage() {
 
   const handleAdd = async (data: BookInsert) => {
     const { data: created, error } = await supabase.from('books').insert([data]).select('id').single()
-    if (error) { alert('Ошибка: ' + error.message); return }
+    if (error) { alert(t.common.error(error.message)); return }
     setModal(null)
     fetchBooks()
     await channel.publishBook(created.id)
@@ -68,7 +72,7 @@ export default function AdminPage() {
     if (modal?.mode !== 'edit') return
     const id = modal.book.id
     const { error } = await supabase.from('books').update(data).eq('id', id)
-    if (error) { alert('Ошибка: ' + error.message); return }
+    if (error) { alert(t.common.error(error.message)); return }
     setModal(null)
     fetchBooks()
     await channel.publishBook(id)
@@ -77,7 +81,7 @@ export default function AdminPage() {
   const handleDelete = async (id: string) => {
     await channel.unpublishBook(id)
     const { error } = await supabase.from('books').delete().eq('id', id)
-    if (error) { alert('Ошибка: ' + error.message); return }
+    if (error) { alert(t.common.error(error.message)); return }
     setDeleteId(null)
     fetchBooks()
   }
@@ -104,19 +108,19 @@ export default function AdminPage() {
           <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Книги</h1>
-                <p className="text-gray-400 text-sm">{loading ? '...' : `${books.length} книг в каталоге`}</p>
+                <h1 className="text-xl font-bold text-gray-900">{t.admin.books}</h1>
+                <p className="text-gray-400 text-sm">{loading ? '...' : t.admin.booksCount(books.length)}</p>
               </div>
               <div className="flex items-center gap-3">
                 {/* Mobile logout */}
-                <button onClick={handleLogout} className="lg:hidden btn-secondary text-sm py-2">Выйти</button>
+                <button onClick={handleLogout} className="lg:hidden btn-secondary text-sm py-2">{t.common.logout}</button>
                 <button
                   onClick={channel.publishAll}
                   disabled={channel.syncingAll}
                   className="btn-secondary text-sm py-2 disabled:opacity-60"
-                  title="Опубликовать или обновить все книги в Telegram-канале"
+                  title={t.admin.syncChannelHint}
                 >
-                  {channel.syncingAll ? 'Обновляю канал…' : 'Обновить Telegram'}
+                  {channel.syncingAll ? t.admin.syncingChannel : t.admin.syncChannel}
                 </button>
                 <button
                   onClick={() => setModal({ mode: 'add' })}
@@ -125,13 +129,15 @@ export default function AdminPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                   </svg>
-                  Добавить
+                  {t.admin.add}
                 </button>
               </div>
             </div>
           </header>
 
           <div className="p-6">
+            <LanguageSwitcher className="lg:hidden mb-6 max-w-xs text-gray-700" />
+
             {/* Search */}
             <div className="relative mb-6">
               <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +145,7 @@ export default function AdminPage() {
               </svg>
               <input
                 type="search"
-                placeholder="Поиск по названию или автору..."
+                placeholder={t.admin.searchPlaceholder}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="input-field pl-10 max-w-md"
@@ -151,7 +157,7 @@ export default function AdminPage() {
               <div className="flex items-center justify-center py-32">
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-10 h-10 border-3 border-accent-500 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-gray-400 text-sm">Загрузка...</span>
+                  <span className="text-gray-400 text-sm">{t.common.loading}</span>
                 </div>
               </div>
             ) : filtered.length === 0 ? (
@@ -161,10 +167,10 @@ export default function AdminPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-700 mb-2">Книги не найдены</h3>
-                <p className="text-gray-400 text-sm mb-6">Добавьте первую книгу в каталог</p>
+                <h3 className="text-lg font-bold text-gray-700 mb-2">{t.admin.noBooks}</h3>
+                <p className="text-gray-400 text-sm mb-6">{t.admin.noBooksHint}</p>
                 <button onClick={() => setModal({ mode: 'add' })} className="btn-primary">
-                  Добавить книгу
+                  {t.admin.addBook}
                 </button>
               </div>
             ) : (
@@ -172,10 +178,10 @@ export default function AdminPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-100">
-                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Книга</th>
-                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">Жанр</th>
-                      <th className="text-right px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Цена</th>
-                      <th className="text-right px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Действия</th>
+                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.admin.columns.book}</th>
+                      <th className="text-left px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">{t.admin.columns.genre}</th>
+                      <th className="text-right px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.admin.columns.price}</th>
+                      <th className="text-right px-5 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.admin.columns.actions}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -201,7 +207,7 @@ export default function AdminPage() {
                           </div>
                         </td>
                         <td className="px-5 py-4 hidden md:table-cell">
-                          <span className="badge bg-accent-50 text-accent-700">{book.genre}</span>
+                          <span className="badge bg-accent-50 text-accent-700">{genreLabel(t, book.genre)}</span>
                         </td>
                         <td className="px-5 py-4 text-right">
                           <span className="font-bold text-gray-900">{formatPrice(book.price, book.currency)}</span>
@@ -211,7 +217,7 @@ export default function AdminPage() {
                             <button
                               onClick={() => setModal({ mode: 'edit', book })}
                               className="p-2 rounded-lg text-gray-400 hover:text-accent-600 hover:bg-accent-50 transition-all"
-                              title="Редактировать"
+                              title={t.common.edit}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -220,7 +226,7 @@ export default function AdminPage() {
                             <button
                               onClick={() => setDeleteId(book.id)}
                               className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                              title="Удалить"
+                              title={t.common.delete}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -247,7 +253,7 @@ export default function AdminPage() {
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
             <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
               <h2 className="text-lg font-bold text-gray-900">
-                {modal.mode === 'add' ? '+ Добавить книгу' : 'Редактировать книгу'}
+                {modal.mode === 'add' ? t.admin.addTitle : t.admin.editTitle}
               </h2>
               <button
                 onClick={() => setModal(null)}
@@ -281,11 +287,11 @@ export default function AdminPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">Удалить книгу?</h3>
-            <p className="text-gray-400 text-sm text-center mb-7">Это действие нельзя отменить</p>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t.admin.deleteTitle}</h3>
+            <p className="text-gray-400 text-sm text-center mb-7">{t.admin.deleteHint}</p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteId(null)} className="btn-secondary flex-1">Отмена</button>
-              <button onClick={() => handleDelete(deleteId)} className="btn-danger flex-1">Удалить</button>
+              <button onClick={() => setDeleteId(null)} className="btn-secondary flex-1">{t.common.cancel}</button>
+              <button onClick={() => handleDelete(deleteId)} className="btn-danger flex-1">{t.common.delete}</button>
             </div>
           </div>
         </div>

@@ -2,9 +2,9 @@ export type Currency = 'EUR' | 'UAH'
 
 export const DEFAULT_CURRENCY: Currency = 'EUR'
 
-export const CURRENCIES: Record<Currency, { symbol: string; label: string }> = {
-  EUR: { symbol: '€', label: 'Евро' },
-  UAH: { symbol: '₴', label: 'Гривна' },
+export const CURRENCIES: Record<Currency, { symbol: string }> = {
+  EUR: { symbol: '€' },
+  UAH: { symbol: '₴' },
 }
 
 export const CURRENCY_CODES = Object.keys(CURRENCIES) as Currency[]

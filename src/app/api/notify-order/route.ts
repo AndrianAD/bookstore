@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getTranslations } from '@/lib/i18n/server'
 import { TelegramClient } from '@/lib/telegram/client'
 import { readTelegramConfig } from '@/lib/telegram/config'
 import { OrderNotification, renderOrderMessage } from '@/lib/telegram/order-message'
@@ -10,7 +11,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Telegram not configured' }, { status: 500 })
   }
 
-  const text = renderOrderMessage((await req.json()) as OrderNotification)
+  const { t } = await getTranslations()
+  const text = renderOrderMessage((await req.json()) as OrderNotification, t)
   const client = new TelegramClient(botToken)
 
   const results = await Promise.allSettled(orderChatIds.map((chatId) => client.sendMessage(chatId, text)))

@@ -2,8 +2,10 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useTransition, useState, useEffect } from 'react'
+import { useI18n } from '@/lib/i18n/client'
 
 export default function SearchBar() {
+  const { t } = useI18n()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -48,7 +50,7 @@ export default function SearchBar() {
       </div>
       <input
         type="search"
-        placeholder="Поиск по названию, автору..."
+        placeholder={t.catalog.searchPlaceholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         className="w-full pl-12 pr-10 py-4 rounded-2xl text-base text-gray-900 placeholder-gray-400 bg-white/95 backdrop-blur-sm border-2 border-transparent focus:border-accent-400 focus:outline-none shadow-lg hover:shadow-xl transition-all duration-200 [&::-webkit-search-cancel-button]:hidden [&::-ms-clear]:hidden"

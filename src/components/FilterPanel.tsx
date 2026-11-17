@@ -2,17 +2,14 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useTransition } from 'react'
-import { BOOK_CONDITIONS, BookCondition, GENRES } from '@/lib/types'
+import { genreLabel } from '@/lib/i18n'
+import { useI18n } from '@/lib/i18n/client'
+import { BOOK_CONDITION_CODES, GENRES } from '@/lib/types'
 
-const CONDITION_OPTIONS: Array<{ value: '' | BookCondition; label: string }> = [
-  { value: '', label: 'Все' },
-  ...(Object.keys(BOOK_CONDITIONS) as BookCondition[]).map((value) => ({
-    value,
-    label: BOOK_CONDITIONS[value].label,
-  })),
-]
+const CONDITION_OPTIONS = ['', ...BOOK_CONDITION_CODES] as const
 
 export default function FilterPanel() {
+  const { t } = useI18n()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -62,7 +59,7 @@ export default function FilterPanel() {
             <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            <h2 className="font-bold text-gray-900 text-base">Фильтры</h2>
+            <h2 className="font-bold text-gray-900 text-base">{t.filters.title}</h2>
             {activeCount > 0 && (
               <span className="bg-accent-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {activeCount}
@@ -77,7 +74,7 @@ export default function FilterPanel() {
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Сбросить
+              {t.filters.reset}
             </button>
           )}
         </div>
@@ -86,10 +83,10 @@ export default function FilterPanel() {
           {/* Condition */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Состояние
+              {t.filters.condition}
             </label>
             <div className="grid grid-cols-3 gap-1 p-1 bg-gray-100 rounded-xl">
-              {CONDITION_OPTIONS.map(({ value, label }) => {
+              {CONDITION_OPTIONS.map((value) => {
                 const active = (searchParams.get('condition') || '') === value
                 return (
                   <button
@@ -100,7 +97,7 @@ export default function FilterPanel() {
                       active ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
-                    {label}
+                    {value ? t.conditions[value] : t.common.all}
                   </button>
                 )
               })}
@@ -110,7 +107,7 @@ export default function FilterPanel() {
           {/* Genre */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Жанр
+              {t.filters.genre}
             </label>
             <div className="flex flex-wrap gap-2">
               {['', ...GENRES].map((g) => {
@@ -126,7 +123,7 @@ export default function FilterPanel() {
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    {g || 'Все'}
+                    {g ? genreLabel(t, g) : t.common.all}
                   </button>
                 )
               })}
@@ -136,12 +133,12 @@ export default function FilterPanel() {
           {/* Price */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Цена
+              {t.filters.price}
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
-                placeholder="От"
+                placeholder={t.filters.priceFrom}
                 min={0}
                 value={searchParams.get('minPrice') || ''}
                 onChange={(e) => handleChange('minPrice', e.target.value)}
@@ -151,7 +148,7 @@ export default function FilterPanel() {
               <span className="text-gray-400 shrink-0">—</span>
               <input
                 type="number"
-                placeholder="До"
+                placeholder={t.filters.priceTo}
                 min={0}
                 value={searchParams.get('maxPrice') || ''}
                 onChange={(e) => handleChange('maxPrice', e.target.value)}
@@ -164,7 +161,7 @@ export default function FilterPanel() {
           {/* Author */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Автор
+              {t.filters.author}
             </label>
             <div className="relative">
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,7 +169,7 @@ export default function FilterPanel() {
               </svg>
               <input
                 type="text"
-                placeholder="Имя автора..."
+                placeholder={t.filters.authorPlaceholder}
                 value={searchParams.get('author') || ''}
                 onChange={(e) => handleChange('author', e.target.value)}
                 className="input-field pl-9"
@@ -185,7 +182,7 @@ export default function FilterPanel() {
         {isPending && (
           <div className="mt-5 flex items-center gap-2 text-xs text-accent-600 font-medium">
             <div className="w-3.5 h-3.5 border-2 border-accent-500 border-t-transparent rounded-full animate-spin" />
-            Обновление каталога...
+            {t.filters.updating}
           </div>
         )}
       </div>

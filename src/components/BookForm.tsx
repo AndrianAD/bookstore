@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { genreLabel } from '@/lib/i18n'
+import { useI18n } from '@/lib/i18n/client'
 import { CURRENCIES, CURRENCY_CODES, DEFAULT_CURRENCY } from '@/lib/money'
-import { BOOK_CONDITIONS, Book, BookCondition, BookInsert, GENRES } from '@/lib/types'
+import { BOOK_CONDITION_CODES, Book, BookInsert, GENRES, conditionOf } from '@/lib/types'
 import ImageUpload from './ImageUpload'
 
 interface BookFormProps {
@@ -23,6 +25,7 @@ const EMPTY: BookInsert = {
 }
 
 export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps) {
+  const { t } = useI18n()
   const [form, setForm] = useState<BookInsert>(
     initial
       ? {
@@ -31,7 +34,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
           price: initial.price,
           currency: initial.currency ?? DEFAULT_CURRENCY,
           genre: initial.genre,
-          condition: initial.condition ?? 'new',
+          condition: conditionOf(initial),
           description: initial.description,
           image_url: initial.image_url || '',
         }
@@ -47,9 +50,9 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
 
   const validate = () => {
     const e: Partial<Record<keyof BookInsert, string>> = {}
-    if (!form.title.trim()) e.title = 'Обязательное поле'
-    if (!form.author.trim()) e.author = 'Обязательное поле'
-    if (!form.price || form.price <= 0) e.price = 'Укажите цену больше 0'
+    if (!form.title.trim()) e.title = t.bookForm.required
+    if (!form.author.trim()) e.author = t.bookForm.required
+    if (!form.price || form.price <= 0) e.price = t.bookForm.priceInvalid
     return e
   }
 
@@ -75,28 +78,28 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Название <span className="text-red-500">*</span>
+              {t.bookForm.title} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => set('title', e.target.value)}
               className={`input-field ${errors.title ? 'border-red-400 focus:ring-red-400' : ''}`}
-              placeholder="Введите название книги"
+              placeholder={t.bookForm.titlePlaceholder}
             />
             {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Автор <span className="text-red-500">*</span>
+              {t.bookForm.author} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={form.author}
               onChange={(e) => set('author', e.target.value)}
               className={`input-field ${errors.author ? 'border-red-400 focus:ring-red-400' : ''}`}
-              placeholder="Имя автора"
+              placeholder={t.bookForm.authorPlaceholder}
             />
             {errors.author && <p className="mt-1 text-xs text-red-500">{errors.author}</p>}
           </div>
@@ -104,7 +107,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Цена <span className="text-red-500">*</span>
+                {t.bookForm.price} <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-2">
                 <input
@@ -122,7 +125,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
                       key={code}
                       type="button"
                       onClick={() => set('currency', code)}
-                      title={CURRENCIES[code].label}
+                      title={t.currencies[code]}
                       className={`w-9 rounded-lg text-base font-semibold transition-all duration-150 ${
                         form.currency === code ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                       }`}
@@ -137,7 +140,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Жанр
+                {t.bookForm.genre}
               </label>
               <select
                 value={form.genre}
@@ -145,7 +148,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
                 className="input-field"
               >
                 {GENRES.map((g) => (
-                  <option key={g} value={g}>{g}</option>
+                  <option key={g} value={g}>{genreLabel(t, g)}</option>
                 ))}
               </select>
             </div>
@@ -153,10 +156,10 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Состояние
+              {t.bookForm.condition}
             </label>
             <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-xl">
-              {(Object.keys(BOOK_CONDITIONS) as BookCondition[]).map((value) => (
+              {BOOK_CONDITION_CODES.map((value) => (
                 <button
                   key={value}
                   type="button"
@@ -165,7 +168,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
                     form.condition === value ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  {BOOK_CONDITIONS[value].label}
+                  {t.conditions[value]}
                 </button>
               ))}
             </div>
@@ -173,14 +176,14 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Описание
+              {t.bookForm.description}
             </label>
             <textarea
               value={form.description}
               onChange={(e) => set('description', e.target.value)}
               rows={5}
               className="input-field resize-none"
-              placeholder="Краткое описание книги..."
+              placeholder={t.bookForm.descriptionPlaceholder}
             />
           </div>
         </div>
@@ -188,7 +191,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
         {/* Right column — image */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Обложка
+            {t.bookForm.cover}
           </label>
           <ImageUpload
             value={form.image_url || ''}
@@ -200,15 +203,15 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
         <button type="button" onClick={onCancel} className="btn-secondary">
-          Отмена
+          {t.common.cancel}
         </button>
         <button type="submit" disabled={submitting} className="btn-primary">
           {submitting ? (
             <span className="flex items-center gap-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Сохранение...
+              {t.bookForm.saving}
             </span>
-          ) : initial ? 'Сохранить изменения' : 'Добавить книгу'}
+          ) : initial ? t.bookForm.save : t.bookForm.add}
         </button>
       </div>
     </form>

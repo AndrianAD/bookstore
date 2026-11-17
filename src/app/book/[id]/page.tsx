@@ -3,7 +3,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { currencySymbol, formatAmount, formatPrice } from '@/lib/money'
-import { Book, conditionOf } from '@/lib/types'
+import { genreLabel } from '@/lib/i18n'
+import { getTranslations } from '@/lib/i18n/server'
+import { Book, CONDITION_BADGES, conditionOf } from '@/lib/types'
 import CartButton from '@/components/CartButton'
 import BookDetailActions from '@/components/BookDetailActions'
 
@@ -54,6 +56,8 @@ export default async function BookDetailPage({
   const related = await getRelated(book.genre, book.id)
   const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
   const condition = conditionOf(book)
+  const { t } = await getTranslations()
+  const genre = genreLabel(t, book.genre)
 
   return (
     <div className="min-h-screen bg-[#f8f6ff]">
@@ -67,7 +71,7 @@ export default async function BookDetailPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <span className="text-lg font-bold text-gray-900">Книжный мир</span>
+              <span className="text-lg font-bold text-gray-900">{t.brand.name}</span>
             </Link>
             <CartButton />
           </div>
@@ -80,7 +84,7 @@ export default async function BookDetailPage({
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Назад в каталог
+          {t.catalog.backToCatalog}
         </Link>
       </div>
 
@@ -116,14 +120,14 @@ export default async function BookDetailPage({
           <div className="space-y-6">
             <div>
               <div className="flex flex-wrap gap-2 mb-3">
-                <span className={`badge ${condition.badge}`}>{condition.label}</span>
-                <span className="badge bg-accent-100 text-accent-700">{book.genre}</span>
+                <span className={`badge ${CONDITION_BADGES[condition]}`}>{t.conditions[condition]}</span>
+                <span className="badge bg-accent-100 text-accent-700">{genre}</span>
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-3">
                 {book.title}
               </h1>
               <p className="text-lg text-gray-500">
-                <span className="text-gray-400">Автор:</span> <span className="font-semibold text-gray-700">{book.author}</span>
+                <span className="text-gray-400">{t.book.author}:</span> <span className="font-semibold text-gray-700">{book.author}</span>
               </p>
             </div>
 
@@ -136,7 +140,7 @@ export default async function BookDetailPage({
                 <span className="text-2xl text-gray-500">{currencySymbol(book.currency)}</span>
                 <span className="ml-auto text-sm text-emerald-600 font-semibold flex items-center gap-1">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-                  В наличии
+                  {t.book.inStock}
                 </span>
               </div>
 
@@ -148,19 +152,19 @@ export default async function BookDetailPage({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                   </svg>
-                  <span className="text-xs text-gray-500">Доставка<br/>1–3 дня</span>
+                  <span className="text-xs text-gray-500">{t.book.delivery[0]}<br/>{t.book.delivery[1]}</span>
                 </div>
                 <div className="flex flex-col items-center text-center gap-1.5">
                   <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
-                  <span className="text-xs text-gray-500">Гарантия<br/>возврата</span>
+                  <span className="text-xs text-gray-500">{t.book.returns[0]}<br/>{t.book.returns[1]}</span>
                 </div>
                 <div className="flex flex-col items-center text-center gap-1.5">
                   <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  <span className="text-xs text-gray-500">Поддержка<br/>24/7</span>
+                  <span className="text-xs text-gray-500">{t.book.support[0]}<br/>{t.book.support[1]}</span>
                 </div>
               </div>
             </div>
@@ -172,7 +176,7 @@ export default async function BookDetailPage({
                   <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
                   </svg>
-                  Описание
+                  {t.book.description}
                 </h2>
                 <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                   {book.description}
@@ -186,23 +190,23 @@ export default async function BookDetailPage({
                 <svg className="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
-                Характеристики
+                {t.book.specs}
               </h2>
               <dl className="divide-y divide-gray-100">
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-sm text-gray-500">Автор</dt>
+                  <dt className="text-sm text-gray-500">{t.book.author}</dt>
                   <dd className="text-sm font-semibold text-gray-900">{book.author}</dd>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-sm text-gray-500">Жанр</dt>
-                  <dd className="text-sm font-semibold text-gray-900">{book.genre}</dd>
+                  <dt className="text-sm text-gray-500">{t.book.genre}</dt>
+                  <dd className="text-sm font-semibold text-gray-900">{genre}</dd>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-sm text-gray-500">Состояние</dt>
-                  <dd className="text-sm font-semibold text-gray-900">{condition.label}</dd>
+                  <dt className="text-sm text-gray-500">{t.book.condition}</dt>
+                  <dd className="text-sm font-semibold text-gray-900">{t.conditions[condition]}</dd>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-sm text-gray-500">Цена</dt>
+                  <dt className="text-sm text-gray-500">{t.book.price}</dt>
                   <dd className="text-sm font-semibold text-gray-900">{formatPrice(book.price, book.currency)}</dd>
                 </div>
               </dl>
@@ -213,7 +217,7 @@ export default async function BookDetailPage({
         {/* Related */}
         {related.length > 0 && (
           <div className="mt-16">
-            <h2 className="text-2xl font-extrabold text-gray-900 mb-6">Похожие книги</h2>
+            <h2 className="text-2xl font-extrabold text-gray-900 mb-6">{t.book.related}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
               {related.map((b) => {
                 const grad = GENRE_COLORS[b.genre] ?? GENRE_COLORS['Другое']

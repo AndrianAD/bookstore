@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useCart } from '@/lib/cart'
+import { useI18n } from '@/lib/i18n/client'
 import { lineTotal } from '@/lib/money'
 import { createClient } from '@/lib/supabase/client'
 
@@ -15,6 +16,7 @@ type Step = 'cart' | 'checkout' | 'success'
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { items, remove, setQuantity, clear, total, totalLabel, count } = useCart()
+  const { t } = useI18n()
   const [step, setStep] = useState<Step>('cart')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -66,7 +68,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     setSubmitting(false)
     if (error) {
       console.error('Order insert error:', error)
-      setError(`Не удалось оформить заказ: ${error.message}`)
+      setError(t.cart.orderFailed(error.message))
       return
     }
 
@@ -117,7 +119,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               )}
             </button>
             <h2 className="text-lg font-bold text-gray-900">
-              {step === 'success' ? 'Заказ оформлен' : step === 'checkout' ? 'Оформление' : 'Корзина'}
+              {step === 'success' ? t.cart.placed : step === 'checkout' ? t.cart.checkout : t.cart.title}
             </h2>
             {step === 'cart' && count > 0 && (
               <span className="badge bg-accent-100 text-accent-700">{count}</span>
@@ -136,10 +138,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
-                  <h3 className="font-bold text-gray-700 mb-1">Корзина пуста</h3>
-                  <p className="text-sm text-gray-400 max-w-[260px]">Добавьте книги из каталога, чтобы оформить заказ</p>
+                  <h3 className="font-bold text-gray-700 mb-1">{t.cart.empty}</h3>
+                  <p className="text-sm text-gray-400 max-w-[260px]">{t.cart.emptyHint}</p>
                   <button onClick={onClose} className="btn-primary mt-6">
-                    К каталогу
+                    {t.cart.toCatalog}
                   </button>
                 </div>
               ) : (
@@ -207,7 +209,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             {items.length > 0 && (
               <div className="border-t border-gray-100 px-5 py-4 shrink-0 bg-white">
                 <div className="flex items-baseline justify-between mb-3">
-                  <span className="text-sm font-medium text-gray-500">Итого</span>
+                  <span className="text-sm font-medium text-gray-500">{t.cart.total}</span>
                   <span className="text-2xl font-extrabold text-gray-900 text-right">
                     {totalLabel}
                   </span>
@@ -216,7 +218,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   onClick={() => setStep('checkout')}
                   className="btn-primary w-full py-3 text-sm"
                 >
-                  Купить в один клик
+                  {t.cart.buyInOneClick}
                 </button>
               </div>
             )}
@@ -229,7 +231,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             <div className="flex-1 overflow-y-auto min-h-0 px-5 py-5 space-y-5">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Номер телефона <span className="text-red-500">*</span>
+                  {t.cart.phone} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
@@ -242,25 +244,25 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   inputMode="tel"
                 />
                 <p className="text-xs text-gray-400 mt-2">
-                  Укажите номер с кодом страны. Оператор перезвонит в течение 15 минут.
+                  {t.cart.phoneHint}
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Имя <span className="text-gray-400 font-normal">(необязательно)</span>
+                  {t.cart.name} <span className="text-gray-400 font-normal">{t.cart.optional}</span>
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Как к вам обращаться"
+                  placeholder={t.cart.namePlaceholder}
                   className="input-field text-base py-3"
                 />
               </div>
 
               <div className="bg-gray-50 rounded-2xl p-4">
-                <h3 className="font-semibold text-sm text-gray-700 mb-3">Ваш заказ ({count})</h3>
+                <h3 className="font-semibold text-sm text-gray-700 mb-3">{t.cart.yourOrder(count)}</h3>
                 <div className="space-y-1.5 mb-3 max-h-40 overflow-y-auto">
                   {items.map((item) => (
                     <div key={item.id} className="flex items-center justify-between text-sm gap-3">
@@ -274,7 +276,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   ))}
                 </div>
                 <div className="flex items-baseline justify-between border-t border-gray-200 pt-3">
-                  <span className="text-sm font-semibold text-gray-700">Итого</span>
+                  <span className="text-sm font-semibold text-gray-700">{t.cart.total}</span>
                   <span className="text-xl font-extrabold text-gray-900 text-right">
                     {totalLabel}
                   </span>
@@ -297,9 +299,9 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
-                    Отправляем...
+                    {t.cart.submitting}
                   </span>
-                ) : 'Подтвердить заказ'}
+                ) : t.cart.confirm}
               </button>
             </div>
           </form>
@@ -313,12 +315,12 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">Спасибо за заказ!</h3>
+            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">{t.cart.thanks}</h3>
             <p className="text-gray-500 mb-8 max-w-xs">
-              Оператор перезвонит вам в течение 15 минут для подтверждения заказа
+              {t.cart.thanksHint}
             </p>
             <button onClick={onClose} className="btn-primary px-8">
-              Продолжить покупки
+              {t.cart.continueShopping}
             </button>
           </div>
         )}

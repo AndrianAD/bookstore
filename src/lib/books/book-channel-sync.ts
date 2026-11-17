@@ -1,3 +1,4 @@
+import { Dictionary } from '@/lib/i18n'
 import { renderBookPost } from '@/lib/telegram/book-post'
 import { PostPublisher } from '@/lib/telegram/channel-publisher'
 import { Book } from '@/lib/types'
@@ -20,6 +21,7 @@ export class BookChannelSync {
     private readonly books: BookRepository,
     private readonly publisher: PostPublisher,
     private readonly siteUrl: string,
+    private readonly t: Dictionary,
   ) {}
 
   async publishBook(id: string) {
@@ -54,7 +56,7 @@ export class BookChannelSync {
 
   private async publish(book: Book) {
     const currentId = book.telegram_message_id ?? null
-    const messageId = await this.publisher.upsert(renderBookPost(book, this.siteUrl), currentId)
+    const messageId = await this.publisher.upsert(renderBookPost(book, this.siteUrl, this.t), currentId)
     if (messageId !== currentId) await this.books.saveTelegramMessageId(book.id, messageId)
   }
 }

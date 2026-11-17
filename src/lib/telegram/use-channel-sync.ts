@@ -1,20 +1,22 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import { useI18n } from '@/lib/i18n/client'
 import { ChannelSyncRequest, describeSyncFailure, requestChannelSync } from './channel-sync-api'
 
 const alertUser = (message: string) => window.alert(message)
 
 export function useChannelSync(notify: (message: string) => void = alertUser) {
+  const { t } = useI18n()
   const [syncingAll, setSyncingAll] = useState(false)
 
   const run = useCallback(
     async (request: ChannelSyncRequest) => {
       const response = await requestChannelSync(request)
-      if (!response.ok) notify('Telegram-канал не обновлён:\n' + describeSyncFailure(response))
+      if (!response.ok) notify(t.admin.channelNotUpdated(describeSyncFailure(response)))
       return response
     },
-    [notify],
+    [notify, t],
   )
 
   const publishBook = useCallback((id: string) => run({ action: 'publish', id }), [run])
@@ -24,12 +26,12 @@ export function useChannelSync(notify: (message: string) => void = alertUser) {
     setSyncingAll(true)
     try {
       const response = await run({ action: 'publish_all' })
-      if (response.skipped) notify('Telegram-канал не настроен: добавьте TELEGRAM_CHANNEL_ID')
-      else if (response.ok) notify(`Telegram-канал обновлён: ${response.synced} книг`)
+      if (response.skipped) notify(t.admin.channelNotConfigured)
+      else if (response.ok) notify(t.admin.channelUpdated(response.synced ?? 0))
     } finally {
       setSyncingAll(false)
     }
-  }, [run, notify])
+  }, [run, notify, t])
 
   return { publishBook, unpublishBook, publishAll, syncingAll }
 }

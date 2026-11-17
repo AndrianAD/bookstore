@@ -1,17 +1,19 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useI18n } from '@/lib/i18n/client'
 
 const OPTIONS = [
-  { value: 'newest',      label: 'Новинки' },
-  { value: 'price_asc',   label: 'Цена: сначала дешевле' },
-  { value: 'price_desc',  label: 'Цена: сначала дороже' },
-  { value: 'title_asc',   label: 'По названию' },
-]
+  { value: 'newest',     key: 'newest' },
+  { value: 'price_asc',  key: 'priceAsc' },
+  { value: 'price_desc', key: 'priceDesc' },
+  { value: 'title_asc',  key: 'titleAsc' },
+] as const
 
 export default function SortSelect() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { t } = useI18n()
   const current = searchParams.get('sort') ?? 'newest'
 
   const handleChange = (value: string) => {
@@ -29,7 +31,7 @@ export default function SortSelect() {
         className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl pl-3 pr-8 py-2 cursor-pointer hover:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-300 transition-colors"
       >
         {OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
+          <option key={o.value} value={o.value}>{t.sort[o.key]}</option>
         ))}
       </select>
       <svg

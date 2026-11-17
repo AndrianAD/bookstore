@@ -1,3 +1,4 @@
+import { Dictionary } from '@/lib/i18n'
 import { PricedLine, formatTotals, lineTotal } from '@/lib/money'
 
 export interface OrderNotification {
@@ -6,18 +7,18 @@ export interface OrderNotification {
   items: Array<PricedLine & { title: string }>
 }
 
-export function renderOrderMessage(order: OrderNotification) {
+export function renderOrderMessage(order: OrderNotification, t: Dictionary) {
   const itemLines = order.items.map((item) => `• ${item.title} x${item.quantity} — ${lineTotal(item)}`)
 
   return [
-    '🛒 Новый заказ!',
+    t.telegram.newOrder,
     '',
-    `📞 Телефон: ${order.phone}`,
-    ...(order.name ? [`👤 Имя: ${order.name}`] : []),
+    `${t.telegram.phone}: ${order.phone}`,
+    ...(order.name ? [`${t.telegram.name}: ${order.name}`] : []),
     '',
-    'Товары:',
+    t.telegram.items,
     ...itemLines,
     '',
-    `💰 Итого: ${formatTotals(order.items)}`,
+    `${t.telegram.total}: ${formatTotals(order.items)}`,
   ].join('\n')
 }

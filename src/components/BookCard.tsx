@@ -2,7 +2,9 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Book, conditionOf } from '@/lib/types'
+import { genreLabel } from '@/lib/i18n'
+import { useI18n } from '@/lib/i18n/client'
+import { Book, CONDITION_BADGES, conditionOf } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 import { currencySymbol, formatAmount } from '@/lib/money'
 
@@ -50,6 +52,7 @@ export default function BookCard({ book }: BookCardProps) {
   const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
   const badgeClass = GENRE_BADGE[book.genre] ?? GENRE_BADGE['Другое']
   const condition = conditionOf(book)
+  const { t } = useI18n()
   const { add, items } = useCart()
   const inCart = items.some((i) => i.id === book.id)
 
@@ -88,14 +91,14 @@ export default function BookCard({ book }: BookCardProps) {
           </div>
         )}
         <div className="absolute top-2.5 left-2.5 z-10">
-          <span className={`badge ${condition.badge} backdrop-blur-sm shadow-sm`}>
-            {condition.label}
+          <span className={`badge ${CONDITION_BADGES[condition]} backdrop-blur-sm shadow-sm`}>
+            {t.conditions[condition]}
           </span>
         </div>
         {/* Genre badge */}
         <div className="absolute top-2.5 right-2.5 z-10">
           <span className={`badge ${badgeClass} backdrop-blur-sm shadow-sm`}>
-            {book.genre}
+            {genreLabel(t, book.genre)}
           </span>
         </div>
       </div>
@@ -116,7 +119,7 @@ export default function BookCard({ book }: BookCardProps) {
           </div>
           <button
             onClick={handleAdd}
-            aria-label={inCart ? 'Добавлено в корзину' : 'В корзину'}
+            aria-label={inCart ? t.book.addedToCart : t.book.toCart}
             className={`flex items-center justify-center text-xs rounded-xl font-semibold transition-all duration-200 active:scale-95 h-8 px-3 min-w-[32px] ${
               inCart
                 ? 'bg-emerald-500 text-white'
@@ -127,7 +130,7 @@ export default function BookCard({ book }: BookCardProps) {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
-            ) : 'В корзину'}
+            ) : t.book.toCart}
           </button>
         </div>
       </div>

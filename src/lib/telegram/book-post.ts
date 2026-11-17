@@ -1,3 +1,4 @@
+import { Dictionary, genreLabel } from '@/lib/i18n'
 import { formatPrice } from '@/lib/money'
 import { Book, conditionOf } from '@/lib/types'
 import { ChannelPost } from './channel-publisher'
@@ -10,12 +11,12 @@ function truncate(value: string, limit: number) {
   return value.length > limit ? `${value.slice(0, limit - 1).trimEnd()}…` : value
 }
 
-export function renderBookPost(book: Book, siteUrl: string): ChannelPost {
+export function renderBookPost(book: Book, siteUrl: string, t: Dictionary): ChannelPost {
   const lines = [
     `<b>${escapeHtml(book.title)}</b>`,
     `✍️ ${escapeHtml(book.author)}`,
-    `📚 ${escapeHtml(book.genre)}`,
-    `🏷 ${conditionOf(book).label}`,
+    `📚 ${escapeHtml(genreLabel(t, book.genre))}`,
+    `🏷 ${t.conditions[conditionOf(book)]}`,
     `💰 <b>${formatPrice(book.price, book.currency)}</b>`,
   ]
   const description = book.description.trim()
@@ -25,7 +26,7 @@ export function renderBookPost(book: Book, siteUrl: string): ChannelPost {
     text: truncate(lines.join('\n'), CAPTION_LIMIT),
     photoUrl: book.image_url || null,
     replyMarkup: {
-      inline_keyboard: [[{ text: '🛒 Купить на сайте', url: `${siteUrl}/book/${book.id}` }]],
+      inline_keyboard: [[{ text: t.telegram.buyOnSite, url: `${siteUrl}/book/${book.id}` }]],
     },
   }
 }

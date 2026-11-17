@@ -5,6 +5,7 @@ import FilterPanel from '@/components/FilterPanel'
 import SearchBar from '@/components/SearchBar'
 import CartButton from '@/components/CartButton'
 import SortSelect from '@/components/SortSelect'
+import { getTranslations } from '@/lib/i18n/server'
 import { Book, isBookCondition } from '@/lib/types'
 
 interface SearchParams {
@@ -49,6 +50,7 @@ export default async function CatalogPage({
 }) {
   const filters = await searchParams
   const books = await getBooks(filters)
+  const { t } = await getTranslations()
 
   return (
     <div className="min-h-screen bg-[#f8f6ff]">
@@ -64,7 +66,7 @@ export default async function CatalogPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <span className="text-lg font-bold text-gray-900 tracking-tight">Книжный мир</span>
+              <span className="text-lg font-bold text-gray-900 tracking-tight">{t.brand.name}</span>
             </a>
 
             {/* Nav */}
@@ -75,7 +77,7 @@ export default async function CatalogPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                Админка
+                {t.catalog.adminLink}
               </a>
             </nav>
           </div>
@@ -91,7 +93,7 @@ export default async function CatalogPage({
         <div className="relative max-w-2xl mx-auto">
           <Suspense fallback={
             <div className="w-full py-4 px-5 rounded-2xl bg-white/20 text-white/40 text-base">
-              Поиск по названию, автору...
+              {t.catalog.searchPlaceholder}
             </div>
           }>
             <SearchBar />
@@ -110,9 +112,9 @@ export default async function CatalogPage({
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Каталог</h2>
+                <h2 className="text-xl font-bold text-gray-900">{t.catalog.title}</h2>
                 <p className="text-gray-400 text-sm mt-0.5">
-                  {books.length === 0 ? 'Ничего не найдено' : `${books.length} книг`}
+                  {books.length === 0 ? t.catalog.empty : t.catalog.count(books.length)}
                 </p>
               </div>
               <Suspense fallback={null}>
@@ -127,8 +129,8 @@ export default async function CatalogPage({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-700 mb-2">Ничего не найдено</h3>
-                <p className="text-gray-400 text-sm">Попробуйте изменить параметры поиска</p>
+                <h3 className="text-lg font-bold text-gray-700 mb-2">{t.catalog.empty}</h3>
+                <p className="text-gray-400 text-sm">{t.catalog.emptyHint}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
@@ -151,9 +153,9 @@ export default async function CatalogPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <span className="font-bold text-gray-900">Книжный мир</span>
+              <span className="font-bold text-gray-900">{t.brand.name}</span>
             </div>
-            <p className="text-sm text-gray-400">© 2024 Книжный мир. Все права защищены.</p>
+            <p className="text-sm text-gray-400">{t.brand.rights(new Date().getFullYear())}</p>
           </div>
         </div>
       </footer>

@@ -1,19 +1,24 @@
 import type { Metadata } from 'next'
+import { I18nProvider } from '@/lib/i18n/client'
+import { getTranslations } from '@/lib/i18n/server'
 import './globals.css'
 
-export const metadata: Metadata = {
-  title: 'Книжный магазин',
-  description: 'Большой выбор книг по лучшим ценам',
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations()
+  return { title: t.meta.title, description: t.meta.description }
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const { locale } = await getTranslations()
   return (
-    <html lang="ru">
-      <body>{children}</body>
+    <html lang={locale}>
+      <body>
+        <I18nProvider locale={locale}>{children}</I18nProvider>
+      </body>
     </html>
   )
 }
