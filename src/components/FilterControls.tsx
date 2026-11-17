@@ -18,13 +18,13 @@ export default function FilterControls({ filters }: { filters: CatalogFilters })
         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
           {t.filters.condition}
         </label>
-        <div className="grid grid-cols-3 gap-1 p-1 bg-gray-100 rounded-xl">
+        <div className="grid grid-cols-3 gap-1 p-1 bg-gray-100 rounded-full">
           {CONDITION_OPTIONS.map((value) => (
             <button
               key={value || 'all'}
               onClick={() => set('condition', value)}
               disabled={isPending}
-              className={`py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 ${
+              className={`h-8 rounded-full text-[13px] font-medium transition-all duration-150 ${
                 get('condition') === value ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -44,10 +44,10 @@ export default function FilterControls({ filters }: { filters: CatalogFilters })
               key={genre || 'all'}
               onClick={() => set('genre', genre)}
               disabled={isPending}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-150 ${
+              className={`h-8 px-3 rounded-full text-[13px] font-medium border transition-colors ${
                 get('genre') === genre
-                  ? 'bg-accent-500 text-white shadow-glow-sm'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-gray-900 border-gray-900 text-white'
+                  : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
               }`}
             >
               {genre ? genreLabel(t, genre) : t.common.all}

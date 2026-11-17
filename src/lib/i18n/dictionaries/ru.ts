@@ -44,6 +44,7 @@ export const ru = {
   },
   common: {
     all: 'Все',
+    clear: 'Очистить',
     cancel: 'Отмена',
     close: 'Закрыть',
     delete: 'Удалить',
@@ -62,6 +63,7 @@ export const ru = {
     backToCatalog: 'Назад в каталог',
   },
   sort: {
+    label: 'Сортировка',
     newest: 'Новинки',
     priceAsc: 'Цена: сначала дешевле',
     priceDesc: 'Цена: сначала дороже',

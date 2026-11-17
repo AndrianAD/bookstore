@@ -45,6 +45,7 @@ export const en: Dictionary = {
   },
   common: {
     all: 'All',
+    clear: 'Clear',
     cancel: 'Cancel',
     close: 'Close',
     delete: 'Delete',
@@ -63,6 +64,7 @@ export const en: Dictionary = {
     backToCatalog: 'Back to catalog',
   },
   sort: {
+    label: 'Sort by',
     newest: 'Newest',
     priceAsc: 'Price: low to high',
     priceDesc: 'Price: high to low',

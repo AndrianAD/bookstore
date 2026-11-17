@@ -9,8 +9,8 @@ export default function FilterPanel() {
   const filters = useCatalogFilters()
 
   return (
-    <aside className="hidden lg:block w-72 shrink-0">
-      <div className="bg-white rounded-2xl shadow-card p-6 sticky top-24 space-y-6">
+    <aside className="hidden lg:block w-64 shrink-0">
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 sticky top-24 space-y-5">
         <FilterHeader filters={filters} />
         <FilterControls filters={filters} />
         <FilterPendingNote filters={filters} />

@@ -22,9 +22,9 @@ export default function MobileFilters({ resultsCount }: MobileFiltersProps) {
     <div className="lg:hidden">
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl px-3 py-2 hover:border-accent-400 transition-colors"
+        className="flex items-center gap-1.5 h-9 bg-white border border-gray-200 text-gray-700 text-[13px] font-medium rounded-full px-3.5 hover:border-gray-300 transition-colors"
       >
-        <FilterIcon className="w-4 h-4 text-accent-500" />
+        <FilterIcon className="w-4 h-4 text-gray-500" />
         {t.filters.title}
         <ActiveFiltersBadge count={filters.activeCount} />
       </button>

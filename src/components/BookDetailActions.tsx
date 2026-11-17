@@ -24,41 +24,36 @@ export default function BookDetailActions({ book }: Props) {
 
   if (stock === 0) {
     return (
-      <button disabled className="w-full py-3.5 rounded-xl font-bold text-base bg-gray-100 text-gray-400 cursor-not-allowed">
+      <button disabled className="w-full h-12 rounded-full font-semibold text-[15px] bg-gray-100 text-gray-400 cursor-not-allowed">
         {t.book.outOfStock}
       </button>
     )
   }
 
   return (
-    <div className="space-y-3">
-      {/* Quantity */}
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-500">{t.book.quantity}</span>
-        <div className="flex items-center bg-gray-100 rounded-xl">
-          <button
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-9 h-9 rounded-xl text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center font-semibold"
-          >
-            −
-          </button>
-          <span className="w-10 text-center font-semibold text-gray-900">{quantity}</span>
-          <button
-            onClick={() => setQuantity(Math.min(stock, quantity + 1))}
-            disabled={quantity >= stock}
-            className="w-9 h-9 rounded-xl text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center font-semibold disabled:opacity-30 disabled:hover:bg-transparent"
-          >
-            +
-          </button>
-        </div>
+    <div className="flex items-center gap-2">
+      <div role="group" aria-label={t.book.quantity} className="flex items-center h-12 rounded-full bg-gray-100 shrink-0">
+        <button
+          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+          disabled={quantity <= 1}
+          className="w-11 h-12 rounded-full text-lg text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-30"
+        >
+          −
+        </button>
+        <span className="w-6 text-center font-semibold text-gray-900 tabular-nums">{quantity}</span>
+        <button
+          onClick={() => setQuantity(Math.min(stock, quantity + 1))}
+          disabled={quantity >= stock}
+          className="w-11 h-12 rounded-full text-lg text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-30"
+        >
+          +
+        </button>
       </div>
 
       <button
         onClick={handleAdd}
-        className={`w-full py-3.5 rounded-xl font-bold text-base transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 ${
-          added
-            ? 'bg-emerald-500 text-white'
-            : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-lg hover:shadow-glow'
+        className={`flex-1 h-12 rounded-full font-semibold text-[15px] transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
+          added ? 'bg-emerald-500 text-white' : 'bg-accent-600 hover:bg-accent-700 text-white'
         }`}
       >
         {added ? (

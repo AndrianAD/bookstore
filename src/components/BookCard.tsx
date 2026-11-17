@@ -2,59 +2,22 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useCart } from '@/lib/cart'
+import { genreGradient } from '@/lib/genre-style'
 import { genreLabel } from '@/lib/i18n'
 import { useI18n } from '@/lib/i18n/client'
-import { Book, CONDITION_BADGES, conditionOf, isInStock } from '@/lib/types'
-import { useCart } from '@/lib/cart'
 import { currencySymbol, formatAmount } from '@/lib/money'
+import { Book, CONDITION_BADGES, conditionOf, isInStock } from '@/lib/types'
 
 interface BookCardProps {
   book: Book
 }
 
-const GENRE_COLORS: Record<string, string> = {
-  'Роман': 'from-rose-400 to-pink-600',
-  'Детектив': 'from-slate-500 to-gray-700',
-  'Фантастика': 'from-blue-400 to-indigo-600',
-  'Фэнтези': 'from-violet-400 to-purple-600',
-  'Биография': 'from-amber-400 to-orange-500',
-  'История': 'from-stone-400 to-stone-600',
-  'Наука': 'from-cyan-400 to-teal-600',
-  'Психология': 'from-emerald-400 to-green-600',
-  'Бизнес': 'from-blue-500 to-cyan-600',
-  'Поэзия': 'from-fuchsia-400 to-pink-500',
-  'Классика': 'from-amber-500 to-yellow-600',
-  'Приключения': 'from-orange-400 to-red-500',
-  'Ужасы': 'from-gray-700 to-gray-900',
-  'Юмор': 'from-yellow-400 to-orange-400',
-  'Другое': 'from-accent-400 to-accent-600',
-}
-
-const GENRE_BADGE: Record<string, string> = {
-  'Роман': 'bg-rose-100 text-rose-700',
-  'Детектив': 'bg-slate-100 text-slate-700',
-  'Фантастика': 'bg-blue-100 text-blue-700',
-  'Фэнтези': 'bg-violet-100 text-violet-700',
-  'Биография': 'bg-amber-100 text-amber-700',
-  'История': 'bg-stone-100 text-stone-700',
-  'Наука': 'bg-cyan-100 text-cyan-700',
-  'Психология': 'bg-emerald-100 text-emerald-700',
-  'Бизнес': 'bg-blue-100 text-blue-700',
-  'Поэзия': 'bg-fuchsia-100 text-fuchsia-700',
-  'Классика': 'bg-amber-100 text-amber-700',
-  'Приключения': 'bg-orange-100 text-orange-700',
-  'Ужасы': 'bg-gray-100 text-gray-700',
-  'Юмор': 'bg-yellow-100 text-yellow-700',
-  'Другое': 'bg-accent-100 text-accent-700',
-}
-
 export default function BookCard({ book }: BookCardProps) {
-  const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
-  const badgeClass = GENRE_BADGE[book.genre] ?? GENRE_BADGE['Другое']
-  const condition = conditionOf(book)
-  const sold = !isInStock(book)
   const { t } = useI18n()
   const { add, items } = useCart()
+  const condition = conditionOf(book)
+  const sold = !isInStock(book)
   const inCart = items.some((i) => i.id === book.id)
 
   const handleAdd = (e: React.MouseEvent) => {
@@ -66,82 +29,64 @@ export default function BookCard({ book }: BookCardProps) {
   return (
     <Link
       href={`/book/${book.id}`}
-      className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
+      className="group flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden transition-shadow duration-200 hover:shadow-card"
     >
-      {/* Cover */}
-      <div className="relative aspect-[2/3] overflow-hidden">
+      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
         {book.image_url ? (
           <Image
             src={book.image_url}
             alt={book.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`object-cover transition-transform duration-500 group-hover:scale-[1.03] ${sold ? 'grayscale opacity-60' : ''}`}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
         ) : (
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass} flex flex-col items-center justify-center p-4`}>
-            {/* Book spine effect */}
-            <div className="absolute left-0 top-0 bottom-0 w-3 bg-black/20" />
-            <div className="relative z-10 text-center">
-              <div className="text-white/30 text-5xl mb-3 font-serif">"</div>
-              <p className="text-white font-bold text-xs text-center leading-tight line-clamp-3 drop-shadow">
-                {book.title}
-              </p>
-              <p className="text-white/70 text-xs mt-2 font-medium">{book.author}</p>
-            </div>
+          <div className={`absolute inset-0 bg-gradient-to-br ${genreGradient(book.genre)} flex flex-col items-center justify-center p-4 ${sold ? 'grayscale opacity-60' : ''}`}>
+            <div className="absolute left-0 inset-y-0 w-2 bg-black/15" />
+            <p className="text-white font-bold text-sm text-center leading-tight line-clamp-4 drop-shadow-sm">{book.title}</p>
+            <p className="text-white/75 text-xs mt-2 text-center line-clamp-1">{book.author}</p>
           </div>
         )}
-        {sold && (
-          <div className="absolute inset-0 z-[5] bg-white/60 backdrop-grayscale flex items-center justify-center">
-            <span className="bg-gray-900/80 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg">
-              {t.book.sold}
-            </span>
-          </div>
-        )}
-        <div className="absolute top-2.5 left-2.5 z-10">
-          <span className={`badge ${CONDITION_BADGES[condition]} backdrop-blur-sm shadow-sm`}>
-            {t.conditions[condition]}
-          </span>
-        </div>
-        {/* Genre badge */}
-        <div className="absolute top-2.5 right-2.5 z-10">
-          <span className={`badge ${badgeClass} backdrop-blur-sm shadow-sm`}>
-            {genreLabel(t, book.genre)}
-          </span>
-        </div>
+
+        {sold ? (
+          <span className="absolute top-2 left-2 badge bg-gray-900/85 text-white">{t.book.sold}</span>
+        ) : condition === 'used' ? (
+          <span className={`absolute top-2 left-2 badge ${CONDITION_BADGES.used}`}>{t.conditions.used}</span>
+        ) : null}
       </div>
 
-      {/* Info */}
-      <div className="flex flex-col flex-1 p-4">
-        <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 mb-1 group-hover:text-accent-600 transition-colors">
+      <div className="flex flex-col flex-1 p-3 sm:p-3.5">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-accent-600 truncate">
+          {genreLabel(t, book.genre)}
+        </p>
+        <h3 className="mt-0.5 text-sm font-semibold text-gray-900 leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-accent-700 transition-colors">
           {book.title}
         </h3>
-        <p className="text-gray-400 text-xs mb-3 font-medium">{book.author}</p>
+        <p className="mt-0.5 text-xs text-gray-500 truncate">{book.author}</p>
 
-        <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
-          <div>
-            <span className="text-xl font-bold text-gray-900">
-              {formatAmount(book.price)}
-            </span>
-            <span className="text-sm text-gray-500 ml-1">{currencySymbol(book.currency)}</span>
-          </div>
-          {sold ? (
-            <span className="text-xs font-semibold text-gray-400">{t.book.outOfStock}</span>
-          ) : (
+        <div className="mt-auto pt-2.5 flex items-center justify-between gap-2">
+          <p className={`whitespace-nowrap ${sold ? 'text-gray-400' : 'text-gray-900'}`}>
+            <span className="text-base sm:text-lg font-bold">{formatAmount(book.price)}</span>
+            <span className="text-sm ml-0.5">{currencySymbol(book.currency)}</span>
+          </p>
+          {!sold && (
             <button
               onClick={handleAdd}
               aria-label={inCart ? t.book.addedToCart : t.book.toCart}
-              className={`flex items-center justify-center text-xs rounded-xl font-semibold transition-all duration-200 active:scale-95 h-8 px-3 min-w-[32px] ${
-                inCart
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm'
+              title={inCart ? t.book.addedToCart : t.book.toCart}
+              className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all active:scale-90 ${
+                inCart ? 'bg-emerald-500 text-white' : 'bg-accent-600 text-white hover:bg-accent-700'
               }`}
             >
               {inCart ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
-              ) : t.book.toCart}
+              ) : (
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              )}
             </button>
           )}
         </div>

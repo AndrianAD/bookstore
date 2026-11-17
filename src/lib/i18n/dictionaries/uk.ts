@@ -45,6 +45,7 @@ export const uk: Dictionary = {
   },
   common: {
     all: 'Усі',
+    clear: 'Очистити',
     cancel: 'Скасувати',
     close: 'Закрити',
     delete: 'Видалити',
@@ -63,6 +64,7 @@ export const uk: Dictionary = {
     backToCatalog: 'Назад до каталогу',
   },
   sort: {
+    label: 'Сортування',
     newest: 'Новинки',
     priceAsc: 'Ціна: від дешевших',
     priceDesc: 'Ціна: від дорожчих',

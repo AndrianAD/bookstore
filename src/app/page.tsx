@@ -2,9 +2,9 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import BookCard from '@/components/BookCard'
 import FilterPanel from '@/components/FilterPanel'
+import GenreChips from '@/components/GenreChips'
 import MobileFilters from '@/components/MobileFilters'
-import SearchBar from '@/components/SearchBar'
-import CartButton from '@/components/CartButton'
+import SiteHeader, { SiteFooter } from '@/components/SiteHeader'
 import SortSelect from '@/components/SortSelect'
 import { getTranslations } from '@/lib/i18n/server'
 import { Book, isBookCondition } from '@/lib/types'
@@ -56,71 +56,30 @@ export default async function CatalogPage({
   const { t } = await getTranslations()
 
   return (
-    <div className="min-h-screen bg-[#f8f6ff]">
+    <div className="min-h-screen">
+      <SiteHeader t={t} />
 
-      {/* ── HEADER ── */}
-      <header className="sticky top-0 z-50 glass shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <a href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center shadow-glow-sm group-hover:shadow-glow transition-shadow">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <span className="text-lg font-bold text-gray-900 tracking-tight">{t.brand.name}</span>
-            </a>
-
-            {/* Nav */}
-            <nav className="flex items-center gap-1">
-              <CartButton />
-              <a href="/admin" className="btn-ghost text-sm flex items-center gap-1.5 hidden sm:flex">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {t.catalog.adminLink}
-              </a>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* ── HERO ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a0533] via-[#2d1060] to-[#0f0a1e] py-8 px-4">
-        {/* Decorative blobs */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-accent-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative max-w-2xl mx-auto">
-          <Suspense fallback={
-            <div className="w-full py-4 px-5 rounded-2xl bg-white/20 text-white/40 text-base">
-              {t.catalog.searchPlaceholder}
-            </div>
-          }>
-            <SearchBar />
-          </Suspense>
-        </div>
-      </section>
-
-      {/* ── CATALOG ── */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-10">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <Suspense fallback={<aside className="hidden lg:block w-72 shrink-0"><div className="bg-white rounded-2xl shadow-card p-6 h-64 animate-pulse" /></aside>}>
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-3 pb-6 lg:pt-6">
+        <div className="flex gap-6">
+          <Suspense fallback={<aside className="hidden lg:block w-64 shrink-0"><div className="bg-white rounded-2xl border border-gray-100 h-64 animate-pulse" /></aside>}>
             <FilterPanel />
           </Suspense>
 
-          <div className="flex-1 min-w-0">
-            {/* Toolbar */}
-            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">{t.catalog.title}</h2>
-                <p className="text-gray-400 text-sm mt-0.5">
-                  {books.length === 0 ? t.catalog.empty : t.catalog.count(books.length)}
-                </p>
-              </div>
-              <div className="flex items-center justify-between gap-2 sm:justify-end">
+          <div className="flex-1 min-w-0 space-y-3 lg:space-y-4">
+            <Suspense fallback={<div className="lg:hidden h-8" />}>
+              <GenreChips />
+            </Suspense>
+
+            <div className="flex items-center justify-between gap-2">
+              <h1 className="flex items-baseline gap-2 min-w-0">
+                <span className="sr-only sm:not-sr-only text-lg lg:text-xl font-bold text-gray-900">{t.catalog.title}</span>
+                {books.length > 0 && (
+                  <span className="text-[13px] text-gray-500 sm:text-gray-400 truncate">
+                    {t.catalog.count(books.length)}
+                  </span>
+                )}
+              </h1>
+              <div className="flex items-center gap-2 shrink-0">
                 <Suspense fallback={null}>
                   <MobileFilters resultsCount={books.length} />
                 </Suspense>
@@ -131,17 +90,17 @@ export default async function CatalogPage({
             </div>
 
             {books.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-card p-20 text-center">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                  <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="bg-white rounded-2xl border border-gray-100 px-6 py-14 text-center">
+                <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-700 mb-2">{t.catalog.empty}</h3>
+                <h2 className="text-base font-semibold text-gray-800 mb-1">{t.catalog.empty}</h2>
                 <p className="text-gray-400 text-sm">{t.catalog.emptyHint}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4">
                 {books.map((book) => (
                   <BookCard key={book.id} book={book} />
                 ))}
@@ -149,24 +108,9 @@ export default async function CatalogPage({
             )}
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* ── FOOTER ── */}
-      <footer className="border-t border-gray-200 bg-white mt-16">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-10">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <span className="font-bold text-gray-900">{t.brand.name}</span>
-            </div>
-            <p className="text-sm text-gray-400">{t.brand.rights(new Date().getFullYear())}</p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter t={t} />
     </div>
   )
 }
