@@ -59,7 +59,7 @@ export default function BookCard({ book }: BookCardProps) {
         <p className="text-[11px] font-medium uppercase tracking-wide text-accent-600 truncate">
           {genreLabel(t, book.genre)}
         </p>
-        <h3 className="mt-0.5 text-sm font-semibold text-gray-900 leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-accent-700 transition-colors">
+        <h3 className="mt-0.5 text-sm font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-accent-700 transition-colors">
           {book.title}
         </h3>
         <p className="mt-0.5 text-xs text-gray-500 truncate">{book.author}</p>
