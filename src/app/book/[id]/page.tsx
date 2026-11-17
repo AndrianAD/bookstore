@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { currencySymbol, formatAmount, formatPrice } from '@/lib/money'
 import { Book, conditionOf } from '@/lib/types'
 import CartButton from '@/components/CartButton'
 import BookDetailActions from '@/components/BookDetailActions'
@@ -130,9 +131,9 @@ export default async function BookDetailPage({
             <div className="bg-white rounded-3xl shadow-card p-6">
               <div className="flex items-baseline gap-3 mb-5">
                 <span className="text-4xl font-extrabold text-gray-900">
-                  {book.price.toLocaleString('ru-RU')}
+                  {formatAmount(book.price)}
                 </span>
-                <span className="text-2xl text-gray-500">€</span>
+                <span className="text-2xl text-gray-500">{currencySymbol(book.currency)}</span>
                 <span className="ml-auto text-sm text-emerald-600 font-semibold flex items-center gap-1">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full" />
                   В наличии
@@ -202,7 +203,7 @@ export default async function BookDetailPage({
                 </div>
                 <div className="flex items-center justify-between py-3">
                   <dt className="text-sm text-gray-500">Цена</dt>
-                  <dd className="text-sm font-semibold text-gray-900">{book.price.toLocaleString('ru-RU')} €</dd>
+                  <dd className="text-sm font-semibold text-gray-900">{formatPrice(book.price, book.currency)}</dd>
                 </div>
               </dl>
             </div>
@@ -238,7 +239,7 @@ export default async function BookDetailPage({
                       <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 group-hover:text-accent-600 transition-colors">{b.title}</h3>
                       <p className="text-xs text-gray-400 mt-0.5">{b.author}</p>
                       <p className="font-bold text-gray-900 mt-2">
-                        {b.price.toLocaleString('ru-RU')} <span className="text-sm text-gray-500">€</span>
+                        {formatAmount(b.price)} <span className="text-sm text-gray-500">{currencySymbol(b.currency)}</span>
                       </p>
                     </div>
                   </Link>

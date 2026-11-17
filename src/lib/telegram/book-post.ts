@@ -1,3 +1,4 @@
+import { formatPrice } from '@/lib/money'
 import { Book, conditionOf } from '@/lib/types'
 import { ChannelPost } from './channel-publisher'
 import { escapeHtml } from './client'
@@ -15,7 +16,7 @@ export function renderBookPost(book: Book, siteUrl: string): ChannelPost {
     `✍️ ${escapeHtml(book.author)}`,
     `📚 ${escapeHtml(book.genre)}`,
     `🏷 ${conditionOf(book).label}`,
-    `💰 <b>${book.price.toLocaleString('ru-RU')} €</b>`,
+    `💰 <b>${formatPrice(book.price, book.currency)}</b>`,
   ]
   const description = book.description.trim()
   if (description) lines.push('', escapeHtml(truncate(description, DESCRIPTION_LIMIT)))

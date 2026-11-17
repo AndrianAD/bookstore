@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { formatTotals } from './money'
 import { Book, CartItem } from './types'
 
 const STORAGE_KEY = 'bookstore-cart'
@@ -48,6 +49,7 @@ export function useCart() {
           title: book.title,
           author: book.author,
           price: book.price,
+          currency: book.currency,
           image_url: book.image_url,
           quantity: 1,
         }]
@@ -69,7 +71,8 @@ export function useCart() {
   const clear = useCallback(() => writeCart([]), [])
 
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0)
+  const totalLabel = formatTotals(items)
   const count = items.reduce((sum, i) => sum + i.quantity, 0)
 
-  return { items, add, remove, setQuantity, clear, total, count, mounted }
+  return { items, add, remove, setQuantity, clear, total, totalLabel, count, mounted }
 }

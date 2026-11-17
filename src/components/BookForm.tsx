@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { CURRENCIES, CURRENCY_CODES, DEFAULT_CURRENCY } from '@/lib/money'
 import { BOOK_CONDITIONS, Book, BookCondition, BookInsert, GENRES } from '@/lib/types'
 import ImageUpload from './ImageUpload'
 
@@ -14,6 +15,7 @@ const EMPTY: BookInsert = {
   title: '',
   author: '',
   price: 0,
+  currency: DEFAULT_CURRENCY,
   genre: GENRES[0],
   condition: 'new',
   description: '',
@@ -27,6 +29,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
           title: initial.title,
           author: initial.author,
           price: initial.price,
+          currency: initial.currency ?? DEFAULT_CURRENCY,
           genre: initial.genre,
           condition: initial.condition ?? 'new',
           description: initial.description,
@@ -101,17 +104,34 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Цена (€) <span className="text-red-500">*</span>
+                Цена <span className="text-red-500">*</span>
               </label>
-              <input
-                type="number"
-                min={1}
-                step={0.01}
-                value={form.price || ''}
-                onChange={(e) => set('price', parseFloat(e.target.value) || 0)}
-                className={`input-field ${errors.price ? 'border-red-400 focus:ring-red-400' : ''}`}
-                placeholder="0.00"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  step={0.01}
+                  value={form.price || ''}
+                  onChange={(e) => set('price', parseFloat(e.target.value) || 0)}
+                  className={`input-field min-w-0 ${errors.price ? 'border-red-400 focus:ring-red-400' : ''}`}
+                  placeholder="0.00"
+                />
+                <div className="flex shrink-0 gap-1 p-1 bg-gray-100 rounded-xl">
+                  {CURRENCY_CODES.map((code) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => set('currency', code)}
+                      title={CURRENCIES[code].label}
+                      className={`w-9 rounded-lg text-base font-semibold transition-all duration-150 ${
+                        form.currency === code ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      {CURRENCIES[code].symbol}
+                    </button>
+                  ))}
+                </div>
+              </div>
               {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price}</p>}
             </div>
 

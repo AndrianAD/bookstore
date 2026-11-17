@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Book, conditionOf } from '@/lib/types'
 import { useCart } from '@/lib/cart'
+import { currencySymbol, formatAmount } from '@/lib/money'
 
 interface BookCardProps {
   book: Book
@@ -109,9 +110,9 @@ export default function BookCard({ book }: BookCardProps) {
         <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
           <div>
             <span className="text-xl font-bold text-gray-900">
-              {book.price.toLocaleString('ru-RU')}
+              {formatAmount(book.price)}
             </span>
-            <span className="text-sm text-gray-500 ml-1">€</span>
+            <span className="text-sm text-gray-500 ml-1">{currencySymbol(book.currency)}</span>
           </div>
           <button
             onClick={handleAdd}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useCart } from '@/lib/cart'
+import { lineTotal } from '@/lib/money'
 import { createClient } from '@/lib/supabase/client'
 
 interface CartDrawerProps {
@@ -13,7 +14,7 @@ interface CartDrawerProps {
 type Step = 'cart' | 'checkout' | 'success'
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { items, remove, setQuantity, clear, total, count } = useCart()
+  const { items, remove, setQuantity, clear, total, totalLabel, count } = useCart()
   const [step, setStep] = useState<Step>('cart')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -192,7 +193,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             </button>
                           </div>
                           <span className="font-bold text-gray-900 text-sm">
-                            {(item.price * item.quantity).toLocaleString('ru-RU')} €
+                            {lineTotal(item)}
                           </span>
                         </div>
                       </div>
@@ -207,8 +208,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               <div className="border-t border-gray-100 px-5 py-4 shrink-0 bg-white">
                 <div className="flex items-baseline justify-between mb-3">
                   <span className="text-sm font-medium text-gray-500">Итого</span>
-                  <span className="text-2xl font-extrabold text-gray-900">
-                    {total.toLocaleString('ru-RU')} €
+                  <span className="text-2xl font-extrabold text-gray-900 text-right">
+                    {totalLabel}
                   </span>
                 </div>
                 <button
@@ -267,15 +268,15 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         {item.title} <span className="text-gray-400">× {item.quantity}</span>
                       </span>
                       <span className="text-gray-900 font-medium shrink-0">
-                        {(item.price * item.quantity).toLocaleString('ru-RU')} €
+                        {lineTotal(item)}
                       </span>
                     </div>
                   ))}
                 </div>
                 <div className="flex items-baseline justify-between border-t border-gray-200 pt-3">
                   <span className="text-sm font-semibold text-gray-700">Итого</span>
-                  <span className="text-xl font-extrabold text-gray-900">
-                    {total.toLocaleString('ru-RU')} €
+                  <span className="text-xl font-extrabold text-gray-900 text-right">
+                    {totalLabel}
                   </span>
                 </div>
               </div>

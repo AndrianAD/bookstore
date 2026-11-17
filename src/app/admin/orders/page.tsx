@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { formatPrice, formatTotals, lineTotal } from '@/lib/money'
 import { createClient } from '@/lib/supabase/client'
 import { Order, OrderStatus, ORDER_STATUSES } from '@/lib/types'
 import AdminSidebar from '@/components/AdminSidebar'
@@ -181,7 +182,7 @@ export default function OrdersPage() {
                           </td>
                           <td className="px-5 py-4 text-right">
                             <span className="font-bold text-gray-900">
-                              {order.total.toLocaleString('ru-RU')} €
+                              {formatTotals(order.items)}
                             </span>
                           </td>
                           <td className="px-5 py-4">
@@ -274,10 +275,10 @@ export default function OrdersPage() {
                       </div>
                       <div className="text-right shrink-0 ml-3">
                         <p className="font-bold text-sm text-gray-900">
-                          {(item.price * item.quantity).toLocaleString('ru-RU')} €
+                          {lineTotal(item)}
                         </p>
                         <p className="text-xs text-gray-400">
-                          {item.quantity} × {item.price.toLocaleString('ru-RU')} €
+                          {item.quantity} × {formatPrice(item.price, item.currency)}
                         </p>
                       </div>
                     </div>
@@ -286,7 +287,7 @@ export default function OrdersPage() {
                 <div className="flex items-baseline justify-between mt-4 pt-4 border-t border-gray-100">
                   <span className="text-sm font-semibold text-gray-700">Итого</span>
                   <span className="text-2xl font-extrabold text-gray-900">
-                    {activeOrder.total.toLocaleString('ru-RU')} €
+                    {formatTotals(activeOrder.items)}
                   </span>
                 </div>
               </div>

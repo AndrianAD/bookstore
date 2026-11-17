@@ -1,3 +1,5 @@
+import type { Currency } from './money'
+
 export type BookCondition = 'new' | 'used'
 
 export const BOOK_CONDITIONS: Record<BookCondition, { label: string; badge: string }> = {
@@ -18,6 +20,7 @@ export interface Book {
   title: string
   author: string
   price: number
+  currency: Currency
   genre: string
   condition: BookCondition
   description: string
@@ -63,6 +66,7 @@ export interface CartItem {
   title: string
   author: string
   price: number
+  currency?: Currency
   image_url: string | null
   quantity: number
 }

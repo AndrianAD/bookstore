@@ -1,16 +1,13 @@
+import { PricedLine, formatTotals, lineTotal } from '@/lib/money'
+
 export interface OrderNotification {
   phone: string
   name: string | null
-  items: Array<{ title: string; quantity: number; price: number }>
-  total: number
+  items: Array<PricedLine & { title: string }>
 }
 
-const formatEuro = (amount: number) => `${amount.toLocaleString('ru-RU')} €`
-
 export function renderOrderMessage(order: OrderNotification) {
-  const itemLines = order.items.map(
-    (item) => `• ${item.title} x${item.quantity} — ${formatEuro(item.price * item.quantity)}`,
-  )
+  const itemLines = order.items.map((item) => `• ${item.title} x${item.quantity} — ${lineTotal(item)}`)
 
   return [
     '🛒 Новый заказ!',
@@ -21,6 +18,6 @@ export function renderOrderMessage(order: OrderNotification) {
     'Товары:',
     ...itemLines,
     '',
-    `💰 Итого: ${formatEuro(order.total)}`,
+    `💰 Итого: ${formatTotals(order.items)}`,
   ].join('\n')
 }

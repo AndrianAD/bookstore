@@ -136,7 +136,7 @@ export default function FilterPanel() {
           {/* Price */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Цена, €
+              Цена
             </label>
             <div className="flex items-center gap-2">
               <input
