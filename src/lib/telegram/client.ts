@@ -16,6 +16,26 @@ export interface InlineKeyboardMarkup {
   inline_keyboard: Array<Array<{ text: string; url: string }>>
 }
 
+export interface TelegramUser {
+  id: number
+  username?: string
+  first_name?: string
+  last_name?: string
+}
+
+export interface IncomingMessage {
+  message_id: number
+  chat: { id: number; type: 'private' | 'group' | 'supergroup' | 'channel' }
+  from?: TelegramUser
+  text?: string
+  contact?: { phone_number: string; user_id?: number }
+}
+
+export interface TelegramUpdate {
+  update_id: number
+  message?: IncomingMessage
+}
+
 export class TelegramApiError extends Error {
   constructor(
     readonly method: string,
@@ -51,8 +71,16 @@ export class TelegramClient {
     }
   }
 
-  sendMessage(chatId: string, text: string, extra: Record<string, unknown> = {}) {
+  sendMessage(chatId: string | number, text: string, extra: Record<string, unknown> = {}) {
     return this.call<TelegramMessage>('sendMessage', { chat_id: chatId, text, ...extra })
+  }
+
+  getMe() {
+    return this.call<TelegramUser>('getMe', {})
+  }
+
+  setWebhook(url: string, secretToken: string, allowedUpdates: string[]) {
+    return this.call('setWebhook', { url, secret_token: secretToken, allowed_updates: allowedUpdates })
   }
 }
 

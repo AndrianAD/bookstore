@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { genreLabel } from '@/lib/i18n'
 import { useI18n } from '@/lib/i18n/client'
 import { CURRENCIES, CURRENCY_CODES, DEFAULT_CURRENCY } from '@/lib/money'
-import { BOOK_CONDITION_CODES, Book, BookInsert, GENRES, conditionOf } from '@/lib/types'
+import { BOOK_CONDITION_CODES, Book, BookInsert, GENRES, conditionOf, stockOf } from '@/lib/types'
 import ImageUpload from './ImageUpload'
 
 interface BookFormProps {
@@ -20,6 +20,7 @@ const EMPTY: BookInsert = {
   currency: DEFAULT_CURRENCY,
   genre: GENRES[0],
   condition: 'new',
+  stock: 1,
   description: '',
   image_url: '',
 }
@@ -35,6 +36,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
           currency: initial.currency ?? DEFAULT_CURRENCY,
           genre: initial.genre,
           condition: conditionOf(initial),
+          stock: stockOf(initial),
           description: initial.description,
           image_url: initial.image_url || '',
         }
@@ -53,6 +55,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
     if (!form.title.trim()) e.title = t.bookForm.required
     if (!form.author.trim()) e.author = t.bookForm.required
     if (!form.price || form.price <= 0) e.price = t.bookForm.priceInvalid
+    if (!Number.isInteger(form.stock) || form.stock < 0) e.stock = t.bookForm.stockInvalid
     return e
   }
 
@@ -154,23 +157,44 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              {t.bookForm.condition}
-            </label>
-            <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-xl">
-              {BOOK_CONDITION_CODES.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => set('condition', value)}
-                  className={`py-2 rounded-lg text-sm font-semibold transition-all duration-150 ${
-                    form.condition === value ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {t.conditions[value]}
-                </button>
-              ))}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t.bookForm.condition}
+              </label>
+              <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-xl">
+                {BOOK_CONDITION_CODES.map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => set('condition', value)}
+                    className={`py-2 rounded-lg text-sm font-semibold transition-all duration-150 ${
+                      form.condition === value ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {t.conditions[value]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t.bookForm.stock}
+              </label>
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={Number.isNaN(form.stock) ? '' : form.stock}
+                onChange={(e) => set('stock', e.target.value === '' ? NaN : Number(e.target.value))}
+                className={`input-field ${errors.stock ? 'border-red-400 focus:ring-red-400' : ''}`}
+              />
+              {errors.stock ? (
+                <p className="mt-1 text-xs text-red-500">{errors.stock}</p>
+              ) : form.stock === 0 ? (
+                <p className="mt-1 text-xs text-amber-600">{t.bookForm.stockZeroHint}</p>
+              ) : null}
             </div>
           </div>
 

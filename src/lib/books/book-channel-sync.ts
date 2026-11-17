@@ -1,7 +1,7 @@
 import { Dictionary } from '@/lib/i18n'
 import { renderBookPost } from '@/lib/telegram/book-post'
 import { PostPublisher } from '@/lib/telegram/channel-publisher'
-import { Book } from '@/lib/types'
+import { Book, isInStock } from '@/lib/types'
 import { BookRepository } from './book-repository'
 
 export class BookNotFoundError extends Error {
@@ -16,16 +16,19 @@ export interface SyncAllResult {
   failed: string[]
 }
 
+/** Builds the link behind the post's order button for a given book. */
+export type OrderLink = (bookId: string) => string
+
 export class BookChannelSync {
   constructor(
     private readonly books: BookRepository,
     private readonly publisher: PostPublisher,
-    private readonly siteUrl: string,
+    private readonly orderLink: OrderLink,
     private readonly t: Dictionary,
   ) {}
 
   async publishBook(id: string) {
-    await this.publish(await this.getBook(id))
+    await this.sync(await this.getBook(id))
   }
 
   /** Must run before the book row is deleted: the post is located through the row. */
@@ -40,7 +43,7 @@ export class BookChannelSync {
 
     for (const book of books) {
       try {
-        await this.publish(book)
+        await this.sync(book)
       } catch (error) {
         failed.push(`${book.title}: ${(error as Error).message}`)
       }
@@ -54,9 +57,19 @@ export class BookChannelSync {
     return book
   }
 
-  private async publish(book: Book) {
+  /** Books in stock have a post in the channel; sold-out books have none. */
+  private async sync(book: Book) {
     const currentId = book.telegram_message_id ?? null
-    const messageId = await this.publisher.upsert(renderBookPost(book, this.siteUrl, this.t), currentId)
+
+    if (!isInStock(book)) {
+      if (currentId === null) return
+      await this.publisher.remove(currentId)
+      await this.books.saveTelegramMessageId(book.id, null)
+      return
+    }
+
+    const post = renderBookPost(book, this.orderLink(book.id), this.t)
+    const messageId = await this.publisher.upsert(post, currentId)
     if (messageId !== currentId) await this.books.saveTelegramMessageId(book.id, messageId)
   }
 }

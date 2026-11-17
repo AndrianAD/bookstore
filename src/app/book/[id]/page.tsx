@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { currencySymbol, formatAmount, formatPrice } from '@/lib/money'
 import { genreLabel } from '@/lib/i18n'
 import { getTranslations } from '@/lib/i18n/server'
-import { Book, CONDITION_BADGES, conditionOf } from '@/lib/types'
+import { Book, CONDITION_BADGES, conditionOf, isInStock } from '@/lib/types'
 import CartButton from '@/components/CartButton'
 import BookDetailActions from '@/components/BookDetailActions'
 
@@ -138,10 +138,17 @@ export default async function BookDetailPage({
                   {formatAmount(book.price)}
                 </span>
                 <span className="text-2xl text-gray-500">{currencySymbol(book.currency)}</span>
-                <span className="ml-auto text-sm text-emerald-600 font-semibold flex items-center gap-1">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-                  {t.book.inStock}
-                </span>
+                {isInStock(book) ? (
+                  <span className="ml-auto text-sm text-emerald-600 font-semibold flex items-center gap-1">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                    {t.book.inStock}
+                  </span>
+                ) : (
+                  <span className="ml-auto text-sm text-gray-400 font-semibold flex items-center gap-1">
+                    <span className="w-2 h-2 bg-gray-300 rounded-full" />
+                    {t.book.outOfStock}
+                  </span>
+                )}
               </div>
 
               <BookDetailActions book={book} />

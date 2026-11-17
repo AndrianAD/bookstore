@@ -8,7 +8,7 @@ import { useI18n } from '@/lib/i18n/client'
 import { formatPrice } from '@/lib/money'
 import { createClient } from '@/lib/supabase/client'
 import { useChannelSync } from '@/lib/telegram/use-channel-sync'
-import { Book, BookInsert } from '@/lib/types'
+import { Book, BookInsert, isInStock, stockOf } from '@/lib/types'
 import BookForm from '@/components/BookForm'
 import AdminSidebar from '@/components/AdminSidebar'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
@@ -211,6 +211,9 @@ export default function AdminPage() {
                         </td>
                         <td className="px-5 py-4 text-right">
                           <span className="font-bold text-gray-900">{formatPrice(book.price, book.currency)}</span>
+                          <p className={`text-xs mt-0.5 ${isInStock(book) ? 'text-gray-400' : 'text-red-500 font-semibold'}`}>
+                            {isInStock(book) ? t.admin.inStockCount(stockOf(book)) : t.book.sold}
+                          </p>
                         </td>
                         <td className="px-5 py-4 text-right">
                           <div className="flex items-center justify-end gap-1">

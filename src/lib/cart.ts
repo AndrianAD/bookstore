@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { formatTotals } from './money'
-import { Book, CartItem } from './types'
+import { Book, CartItem, stockOf } from './types'
 
 const STORAGE_KEY = 'bookstore-cart'
 const EVENT_NAME = 'bookstore-cart-changed'
@@ -39,11 +39,15 @@ export function useCart() {
     }
   }, [])
 
-  const add = useCallback((book: Book) => {
+  const add = useCallback((book: Book, quantity = 1) => {
+    const stock = stockOf(book)
+    if (stock === 0) return
     const current = readCart()
     const existing = current.find((i) => i.id === book.id)
     const updated = existing
-      ? current.map((i) => i.id === book.id ? { ...i, quantity: i.quantity + 1 } : i)
+      ? current.map((i) => i.id === book.id
+          ? { ...i, stock, quantity: Math.min(i.quantity + quantity, stock) }
+          : i)
       : [...current, {
           id: book.id,
           title: book.title,
@@ -51,7 +55,8 @@ export function useCart() {
           price: book.price,
           currency: book.currency,
           image_url: book.image_url,
-          quantity: 1,
+          quantity: Math.min(quantity, stock),
+          stock,
         }]
     writeCart(updated)
   }, [])
@@ -65,7 +70,7 @@ export function useCart() {
       writeCart(readCart().filter((i) => i.id !== id))
       return
     }
-    writeCart(readCart().map((i) => i.id === id ? { ...i, quantity } : i))
+    writeCart(readCart().map((i) => i.id === id ? { ...i, quantity: Math.min(quantity, i.stock ?? quantity) } : i))
   }, [])
 
   const clear = useCallback(() => writeCart([]), [])

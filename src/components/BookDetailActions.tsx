@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Book } from '@/lib/types'
+import { Book, stockOf } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 import { useI18n } from '@/lib/i18n/client'
 
@@ -12,13 +12,22 @@ interface Props {
 export default function BookDetailActions({ book }: Props) {
   const { add } = useCart()
   const { t } = useI18n()
+  const stock = stockOf(book)
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
 
   const handleAdd = () => {
-    for (let i = 0; i < quantity; i++) add(book)
+    add(book, quantity)
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
+  }
+
+  if (stock === 0) {
+    return (
+      <button disabled className="w-full py-3.5 rounded-xl font-bold text-base bg-gray-100 text-gray-400 cursor-not-allowed">
+        {t.book.outOfStock}
+      </button>
+    )
   }
 
   return (
@@ -35,8 +44,9 @@ export default function BookDetailActions({ book }: Props) {
           </button>
           <span className="w-10 text-center font-semibold text-gray-900">{quantity}</span>
           <button
-            onClick={() => setQuantity(quantity + 1)}
-            className="w-9 h-9 rounded-xl text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center font-semibold"
+            onClick={() => setQuantity(Math.min(stock, quantity + 1))}
+            disabled={quantity >= stock}
+            className="w-9 h-9 rounded-xl text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center font-semibold disabled:opacity-30 disabled:hover:bg-transparent"
           >
             +
           </button>

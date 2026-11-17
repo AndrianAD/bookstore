@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTranslations } from '@/lib/i18n/server'
+import { OrderNotifier } from '@/lib/orders/order-notifier'
 import { TelegramClient } from '@/lib/telegram/client'
 import { readTelegramConfig } from '@/lib/telegram/config'
-import { OrderNotification, renderOrderMessage } from '@/lib/telegram/order-message'
+import { OrderNotification } from '@/lib/telegram/order-message'
 
 export async function POST(req: NextRequest) {
   const { botToken, orderChatIds } = readTelegramConfig()
@@ -12,16 +13,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { t } = await getTranslations()
-  const text = renderOrderMessage((await req.json()) as OrderNotification, t)
-  const client = new TelegramClient(botToken)
-
-  const results = await Promise.allSettled(orderChatIds.map((chatId) => client.sendMessage(chatId, text)))
-  results.forEach((result, i) => {
-    if (result.status === 'rejected') {
-      console.error(`Telegram order notification to ${orderChatIds[i]} failed:`, result.reason)
-    }
-  })
-
-  const ok = results.every((result) => result.status === 'fulfilled')
+  const notifier = new OrderNotifier(new TelegramClient(botToken), orderChatIds, t)
+  const ok = await notifier.notify((await req.json()) as OrderNotification)
   return NextResponse.json({ ok }, { status: ok ? 200 : 502 })
 }

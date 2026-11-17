@@ -166,7 +166,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             <span className="w-7 text-center text-sm font-semibold text-gray-900">{item.quantity}</span>
                             <button
                               onClick={() => setQuantity(item.id, item.quantity + 1)}
-                              className="w-7 h-7 text-gray-600 hover:bg-gray-200 rounded-r-lg transition-colors flex items-center justify-center font-semibold"
+                              disabled={item.stock !== undefined && item.quantity >= item.stock}
+                              className="w-7 h-7 text-gray-600 hover:bg-gray-200 rounded-r-lg transition-colors flex items-center justify-center font-semibold disabled:opacity-30 disabled:hover:bg-transparent"
                             >
                               +
                             </button>

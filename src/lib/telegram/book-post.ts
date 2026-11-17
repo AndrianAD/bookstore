@@ -11,7 +11,7 @@ function truncate(value: string, limit: number) {
   return value.length > limit ? `${value.slice(0, limit - 1).trimEnd()}…` : value
 }
 
-export function renderBookPost(book: Book, siteUrl: string, t: Dictionary): ChannelPost {
+export function renderBookPost(book: Book, orderUrl: string, t: Dictionary): ChannelPost {
   const lines = [
     `<b>${escapeHtml(book.title)}</b>`,
     `✍️ ${escapeHtml(book.author)}`,
@@ -26,7 +26,7 @@ export function renderBookPost(book: Book, siteUrl: string, t: Dictionary): Chan
     text: truncate(lines.join('\n'), CAPTION_LIMIT),
     photoUrl: book.image_url || null,
     replyMarkup: {
-      inline_keyboard: [[{ text: t.telegram.buyOnSite, url: `${siteUrl}/book/${book.id}` }]],
+      inline_keyboard: [[{ text: t.telegram.order, url: orderUrl }]],
     },
   }
 }

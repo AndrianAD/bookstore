@@ -4,6 +4,7 @@ import { MissingMigrationError, SupabaseBookRepository } from '@/lib/books/book-
 import { getDictionary } from '@/lib/i18n'
 import { readSiteLocale } from '@/lib/settings/site-settings'
 import { createClient } from '@/lib/supabase/server'
+import { bookOrderLink, botUsername, webhookSecret } from '@/lib/telegram/bot-link'
 import { TelegramChannelPublisher } from '@/lib/telegram/channel-publisher'
 import { TelegramClient } from '@/lib/telegram/client'
 import { readTelegramConfig } from '@/lib/telegram/config'
@@ -29,15 +30,18 @@ export async function POST(req: NextRequest) {
   const { botToken, channelId } = readTelegramConfig()
   if (!botToken || !channelId) return respond({ ok: true, skipped: true })
 
-  const sync = new BookChannelSync(
-    new SupabaseBookRepository(supabase),
-    new TelegramChannelPublisher(new TelegramClient(botToken), channelId),
-    req.nextUrl.origin,
-    getDictionary(await readSiteLocale(supabase)),
-  )
   const request = (await req.json()) as ChannelSyncRequest
+  const client = new TelegramClient(botToken)
 
   try {
+    const username = await botUsername(client)
+    const sync = new BookChannelSync(
+      new SupabaseBookRepository(supabase),
+      new TelegramChannelPublisher(client, channelId),
+      (bookId) => bookOrderLink(username, bookId),
+      getDictionary(await readSiteLocale(supabase)),
+    )
+
     switch (request.action) {
       case 'publish':
         await sync.publishBook(request.id)
@@ -46,6 +50,7 @@ export async function POST(req: NextRequest) {
         await sync.unpublishBook(request.id)
         return respond({ ok: true })
       case 'publish_all': {
+        await client.setWebhook(`${req.nextUrl.origin}/api/telegram-webhook`, webhookSecret(botToken), ['message'])
         const { synced, failed } = await sync.publishAll()
         return respond({ ok: failed.length === 0, synced, failed })
       }

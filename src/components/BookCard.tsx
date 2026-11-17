@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { genreLabel } from '@/lib/i18n'
 import { useI18n } from '@/lib/i18n/client'
-import { Book, CONDITION_BADGES, conditionOf } from '@/lib/types'
+import { Book, CONDITION_BADGES, conditionOf, isInStock } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 import { currencySymbol, formatAmount } from '@/lib/money'
 
@@ -52,6 +52,7 @@ export default function BookCard({ book }: BookCardProps) {
   const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
   const badgeClass = GENRE_BADGE[book.genre] ?? GENRE_BADGE['Другое']
   const condition = conditionOf(book)
+  const sold = !isInStock(book)
   const { t } = useI18n()
   const { add, items } = useCart()
   const inCart = items.some((i) => i.id === book.id)
@@ -90,6 +91,13 @@ export default function BookCard({ book }: BookCardProps) {
             </div>
           </div>
         )}
+        {sold && (
+          <div className="absolute inset-0 z-[5] bg-white/60 backdrop-grayscale flex items-center justify-center">
+            <span className="bg-gray-900/80 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg">
+              {t.book.sold}
+            </span>
+          </div>
+        )}
         <div className="absolute top-2.5 left-2.5 z-10">
           <span className={`badge ${CONDITION_BADGES[condition]} backdrop-blur-sm shadow-sm`}>
             {t.conditions[condition]}
@@ -117,21 +125,25 @@ export default function BookCard({ book }: BookCardProps) {
             </span>
             <span className="text-sm text-gray-500 ml-1">{currencySymbol(book.currency)}</span>
           </div>
-          <button
-            onClick={handleAdd}
-            aria-label={inCart ? t.book.addedToCart : t.book.toCart}
-            className={`flex items-center justify-center text-xs rounded-xl font-semibold transition-all duration-200 active:scale-95 h-8 px-3 min-w-[32px] ${
-              inCart
-                ? 'bg-emerald-500 text-white'
-                : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm'
-            }`}
-          >
-            {inCart ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            ) : t.book.toCart}
-          </button>
+          {sold ? (
+            <span className="text-xs font-semibold text-gray-400">{t.book.outOfStock}</span>
+          ) : (
+            <button
+              onClick={handleAdd}
+              aria-label={inCart ? t.book.addedToCart : t.book.toCart}
+              className={`flex items-center justify-center text-xs rounded-xl font-semibold transition-all duration-200 active:scale-95 h-8 px-3 min-w-[32px] ${
+                inCart
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600 text-white shadow-sm hover:shadow-glow-sm'
+              }`}
+            >
+              {inCart ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : t.book.toCart}
+            </button>
+          )}
         </div>
       </div>
     </Link>

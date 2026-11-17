@@ -4,7 +4,7 @@ import { Book } from '@/lib/types'
 export interface BookRepository {
   findById(id: string): Promise<Book | null>
   findAllOldestFirst(): Promise<Book[]>
-  saveTelegramMessageId(id: string, messageId: number): Promise<void>
+  saveTelegramMessageId(id: string, messageId: number | null): Promise<void>
 }
 
 export class MissingMigrationError extends Error {
@@ -37,7 +37,7 @@ export class SupabaseBookRepository implements BookRepository {
     return ((data ?? []) as Book[]).map(assertMigrated)
   }
 
-  async saveTelegramMessageId(id: string, messageId: number) {
+  async saveTelegramMessageId(id: string, messageId: number | null) {
     const { error } = await this.supabase.from('books').update({ telegram_message_id: messageId }).eq('id', id)
     if (error) throw new Error(error.message)
   }

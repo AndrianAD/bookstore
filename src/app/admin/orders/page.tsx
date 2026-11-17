@@ -9,6 +9,11 @@ import { createClient } from '@/lib/supabase/client'
 import { ORDER_STATUS_CODES, ORDER_STATUS_COLORS, Order, OrderStatus } from '@/lib/types'
 import AdminSidebar from '@/components/AdminSidebar'
 
+/** Customers without a username are stored by numeric id, which only the tg:// scheme can open. */
+function telegramProfileUrl(handle: string) {
+  return handle.startsWith('@') ? `https://t.me/${handle.slice(1)}` : `tg://user?id=${handle}`
+}
+
 export default function OrdersPage() {
   const router = useRouter()
   const { locale, t } = useI18n()
@@ -248,6 +253,19 @@ export default function OrdersPage() {
                       {activeOrder.phone}
                     </a>
                   </div>
+                  {activeOrder.customer_telegram && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-500">Telegram</span>
+                      <a
+                        href={telegramProfileUrl(activeOrder.customer_telegram)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm font-bold text-accent-600 hover:underline"
+                      >
+                        {activeOrder.customer_telegram}
+                      </a>
+                    </div>
+                  )}
                 </div>
                 <a
                   href={`tel:${activeOrder.phone}`}
