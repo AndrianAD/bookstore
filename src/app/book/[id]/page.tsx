@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Book } from '@/lib/types'
+import { Book, conditionOf } from '@/lib/types'
 import CartButton from '@/components/CartButton'
 import BookDetailActions from '@/components/BookDetailActions'
 
@@ -52,6 +52,7 @@ export default async function BookDetailPage({
 
   const related = await getRelated(book.genre, book.id)
   const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
+  const condition = conditionOf(book)
 
   return (
     <div className="min-h-screen bg-[#f8f6ff]">
@@ -113,7 +114,10 @@ export default async function BookDetailPage({
           {/* Info */}
           <div className="space-y-6">
             <div>
-              <span className="badge bg-accent-100 text-accent-700 mb-3">{book.genre}</span>
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className={`badge ${condition.badge}`}>{condition.label}</span>
+                <span className="badge bg-accent-100 text-accent-700">{book.genre}</span>
+              </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-3">
                 {book.title}
               </h1>
@@ -191,6 +195,10 @@ export default async function BookDetailPage({
                 <div className="flex items-center justify-between py-3">
                   <dt className="text-sm text-gray-500">Жанр</dt>
                   <dd className="text-sm font-semibold text-gray-900">{book.genre}</dd>
+                </div>
+                <div className="flex items-center justify-between py-3">
+                  <dt className="text-sm text-gray-500">Состояние</dt>
+                  <dd className="text-sm font-semibold text-gray-900">{condition.label}</dd>
                 </div>
                 <div className="flex items-center justify-between py-3">
                   <dt className="text-sm text-gray-500">Цена</dt>

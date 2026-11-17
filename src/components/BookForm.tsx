@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Book, BookInsert, GENRES } from '@/lib/types'
+import { BOOK_CONDITIONS, Book, BookCondition, BookInsert, GENRES } from '@/lib/types'
 import ImageUpload from './ImageUpload'
 
 interface BookFormProps {
@@ -15,6 +15,7 @@ const EMPTY: BookInsert = {
   author: '',
   price: 0,
   genre: GENRES[0],
+  condition: 'new',
   description: '',
   image_url: '',
 }
@@ -27,6 +28,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
           author: initial.author,
           price: initial.price,
           genre: initial.genre,
+          condition: initial.condition ?? 'new',
           description: initial.description,
           image_url: initial.image_url || '',
         }
@@ -126,6 +128,26 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
                   <option key={g} value={g}>{g}</option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Состояние
+            </label>
+            <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-xl">
+              {(Object.keys(BOOK_CONDITIONS) as BookCondition[]).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => set('condition', value)}
+                  className={`py-2 rounded-lg text-sm font-semibold transition-all duration-150 ${
+                    form.condition === value ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {BOOK_CONDITIONS[value].label}
+                </button>
+              ))}
             </div>
           </div>
 

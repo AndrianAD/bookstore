@@ -1,4 +1,4 @@
-import { Book } from '@/lib/types'
+import { Book, conditionOf } from '@/lib/types'
 import { ChannelPost } from './channel-publisher'
 import { escapeHtml } from './client'
 
@@ -14,6 +14,7 @@ export function renderBookPost(book: Book, siteUrl: string): ChannelPost {
     `<b>${escapeHtml(book.title)}</b>`,
     `✍️ ${escapeHtml(book.author)}`,
     `📚 ${escapeHtml(book.genre)}`,
+    `🏷 ${conditionOf(book).label}`,
     `💰 <b>${book.price.toLocaleString('ru-RU')} €</b>`,
   ]
   const description = book.description.trim()

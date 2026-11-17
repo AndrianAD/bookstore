@@ -2,7 +2,15 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback, useTransition } from 'react'
-import { GENRES } from '@/lib/types'
+import { BOOK_CONDITIONS, BookCondition, GENRES } from '@/lib/types'
+
+const CONDITION_OPTIONS: Array<{ value: '' | BookCondition; label: string }> = [
+  { value: '', label: 'Все' },
+  ...(Object.keys(BOOK_CONDITIONS) as BookCondition[]).map((value) => ({
+    value,
+    label: BOOK_CONDITIONS[value].label,
+  })),
+]
 
 export default function FilterPanel() {
   const router = useRouter()
@@ -32,12 +40,14 @@ export default function FilterPanel() {
   const handleReset = () => startTransition(() => router.push(pathname, { scroll: false }))
 
   const hasFilters =
+    searchParams.get('condition') ||
     searchParams.get('genre') ||
     searchParams.get('minPrice') ||
     searchParams.get('maxPrice') ||
     searchParams.get('author')
 
   const activeCount = [
+    searchParams.get('condition'),
     searchParams.get('genre'),
     searchParams.get('minPrice') || searchParams.get('maxPrice'),
     searchParams.get('author'),
@@ -73,6 +83,30 @@ export default function FilterPanel() {
         </div>
 
         <div className="space-y-6">
+          {/* Condition */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Состояние
+            </label>
+            <div className="grid grid-cols-3 gap-1 p-1 bg-gray-100 rounded-xl">
+              {CONDITION_OPTIONS.map(({ value, label }) => {
+                const active = (searchParams.get('condition') || '') === value
+                return (
+                  <button
+                    key={value || 'all'}
+                    onClick={() => handleChange('condition', value)}
+                    disabled={isPending}
+                    className={`py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 ${
+                      active ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
           {/* Genre */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">

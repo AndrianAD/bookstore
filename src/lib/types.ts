@@ -1,9 +1,25 @@
+export type BookCondition = 'new' | 'used'
+
+export const BOOK_CONDITIONS: Record<BookCondition, { label: string; badge: string }> = {
+  new:  { label: 'Новая', badge: 'bg-emerald-100 text-emerald-700' },
+  used: { label: 'Б/у',   badge: 'bg-amber-100 text-amber-700' },
+}
+
+export function isBookCondition(value: unknown): value is BookCondition {
+  return typeof value === 'string' && value in BOOK_CONDITIONS
+}
+
+export function conditionOf(book: Pick<Book, 'condition'>) {
+  return BOOK_CONDITIONS[book.condition] ?? BOOK_CONDITIONS.new
+}
+
 export interface Book {
   id: string
   title: string
   author: string
   price: number
   genre: string
+  condition: BookCondition
   description: string
   image_url: string | null
   telegram_message_id?: number | null
@@ -36,6 +52,7 @@ export type Genre = (typeof GENRES)[number]
 export interface BookFilters {
   search: string
   genre: string
+  condition: string
   minPrice: string
   maxPrice: string
   author: string

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Book } from '@/lib/types'
+import { Book, conditionOf } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
 interface BookCardProps {
@@ -48,6 +48,7 @@ const GENRE_BADGE: Record<string, string> = {
 export default function BookCard({ book }: BookCardProps) {
   const gradientClass = GENRE_COLORS[book.genre] ?? GENRE_COLORS['Другое']
   const badgeClass = GENRE_BADGE[book.genre] ?? GENRE_BADGE['Другое']
+  const condition = conditionOf(book)
   const { add, items } = useCart()
   const inCart = items.some((i) => i.id === book.id)
 
@@ -85,6 +86,11 @@ export default function BookCard({ book }: BookCardProps) {
             </div>
           </div>
         )}
+        <div className="absolute top-2.5 left-2.5 z-10">
+          <span className={`badge ${condition.badge} backdrop-blur-sm shadow-sm`}>
+            {condition.label}
+          </span>
+        </div>
         {/* Genre badge */}
         <div className="absolute top-2.5 right-2.5 z-10">
           <span className={`badge ${badgeClass} backdrop-blur-sm shadow-sm`}>

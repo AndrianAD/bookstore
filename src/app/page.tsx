@@ -5,11 +5,12 @@ import FilterPanel from '@/components/FilterPanel'
 import SearchBar from '@/components/SearchBar'
 import CartButton from '@/components/CartButton'
 import SortSelect from '@/components/SortSelect'
-import { Book } from '@/lib/types'
+import { Book, isBookCondition } from '@/lib/types'
 
 interface SearchParams {
   search?: string
   genre?: string
+  condition?: string
   minPrice?: string
   maxPrice?: string
   author?: string
@@ -31,6 +32,7 @@ async function getBooks(filters: SearchParams): Promise<Book[]> {
 
   if (filters.search) query = query.ilike('title', `%${filters.search}%`)
   if (filters.genre) query = query.eq('genre', filters.genre)
+  if (isBookCondition(filters.condition)) query = query.eq('condition', filters.condition)
   if (filters.minPrice) query = query.gte('price', parseFloat(filters.minPrice))
   if (filters.maxPrice) query = query.lte('price', parseFloat(filters.maxPrice))
   if (filters.author) query = query.ilike('author', `%${filters.author}%`)
