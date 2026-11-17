@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { useChannelSync } from '@/lib/telegram/use-channel-sync'
 import { Book, BookInsert } from '@/lib/types'
 import BookForm from '@/components/BookForm'
 import AdminSidebar from '@/components/AdminSidebar'
@@ -19,6 +20,7 @@ export default function AdminPage() {
   const [userEmail, setUserEmail] = useState('')
   const [search, setSearch] = useState('')
   const [newOrdersCount, setNewOrdersCount] = useState(0)
+  const channel = useChannelSync()
 
   const supabase = createClient()
 
@@ -54,21 +56,25 @@ export default function AdminPage() {
   }
 
   const handleAdd = async (data: BookInsert) => {
-    const { error } = await supabase.from('books').insert([data])
+    const { data: created, error } = await supabase.from('books').insert([data]).select('id').single()
     if (error) { alert('Ошибка: ' + error.message); return }
     setModal(null)
     fetchBooks()
+    await channel.publishBook(created.id)
   }
 
   const handleEdit = async (data: BookInsert) => {
     if (modal?.mode !== 'edit') return
-    const { error } = await supabase.from('books').update(data).eq('id', modal.book.id)
+    const id = modal.book.id
+    const { error } = await supabase.from('books').update(data).eq('id', id)
     if (error) { alert('Ошибка: ' + error.message); return }
     setModal(null)
     fetchBooks()
+    await channel.publishBook(id)
   }
 
   const handleDelete = async (id: string) => {
+    await channel.unpublishBook(id)
     const { error } = await supabase.from('books').delete().eq('id', id)
     if (error) { alert('Ошибка: ' + error.message); return }
     setDeleteId(null)
@@ -103,6 +109,14 @@ export default function AdminPage() {
               <div className="flex items-center gap-3">
                 {/* Mobile logout */}
                 <button onClick={handleLogout} className="lg:hidden btn-secondary text-sm py-2">Выйти</button>
+                <button
+                  onClick={channel.publishAll}
+                  disabled={channel.syncingAll}
+                  className="btn-secondary text-sm py-2 disabled:opacity-60"
+                  title="Опубликовать или обновить все книги в Telegram-канале"
+                >
+                  {channel.syncingAll ? 'Обновляю канал…' : 'Обновить Telegram'}
+                </button>
                 <button
                   onClick={() => setModal({ mode: 'add' })}
                   className="btn-primary flex items-center gap-2"

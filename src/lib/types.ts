@@ -6,10 +6,11 @@ export interface Book {
   genre: string
   description: string
   image_url: string | null
+  telegram_message_id?: number | null
   created_at: string
 }
 
-export type BookInsert = Omit<Book, 'id' | 'created_at'>
+export type BookInsert = Omit<Book, 'id' | 'created_at' | 'telegram_message_id'>
 export type BookUpdate = Partial<BookInsert>
 
 export const GENRES = [
