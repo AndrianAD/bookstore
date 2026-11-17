@@ -11,11 +11,15 @@ insert into public.site_settings (id) values (1) on conflict (id) do nothing;
 
 alter table public.site_settings enable row level security;
 
+drop policy if exists "Site settings are publicly readable" on public.site_settings;
 create policy "Site settings are publicly readable"
   on public.site_settings for select
   using (true);
 
+drop policy if exists "Authenticated users can update site settings" on public.site_settings;
 create policy "Authenticated users can update site settings"
   on public.site_settings for update
   to authenticated
   using (true);
+
+notify pgrst, 'reload schema';
