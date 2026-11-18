@@ -46,14 +46,3 @@ export function FilterHeader({ filters, children }: { filters: CatalogFilters; c
     </div>
   )
 }
-
-export function FilterPendingNote({ filters }: { filters: CatalogFilters }) {
-  const { t } = useI18n()
-  if (!filters.isPending) return null
-  return (
-    <div className="flex items-center gap-2 text-xs text-accent-600 font-medium">
-      <div className="w-3.5 h-3.5 border-2 border-accent-500 border-t-transparent rounded-full animate-spin" />
-      {t.filters.updating}
-    </div>
-  )
-}

@@ -5,7 +5,7 @@ import { useI18n } from '@/lib/i18n/client'
 import { useCatalogFilters } from '@/lib/use-catalog-filters'
 import Drawer from './Drawer'
 import FilterControls from './FilterControls'
-import { ActiveFiltersBadge, FilterHeader, FilterIcon, FilterPendingNote } from './FilterHeader'
+import { ActiveFiltersBadge, FilterHeader, FilterIcon } from './FilterHeader'
 
 interface MobileFiltersProps {
   /** Number of books matching the current filters, shown on the apply button. */
@@ -46,7 +46,6 @@ export default function MobileFilters({ resultsCount }: MobileFiltersProps) {
 
         <div className="flex-1 overflow-y-auto min-h-0 px-5 py-5 space-y-5">
           <FilterControls filters={filters} />
-          <FilterPendingNote filters={filters} />
         </div>
 
         <div className="border-t border-gray-100 px-5 py-4 shrink-0">

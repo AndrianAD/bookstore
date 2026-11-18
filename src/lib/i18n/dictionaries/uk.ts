@@ -75,7 +75,6 @@ export const uk: Dictionary = {
     reset: 'Скинути',
     condition: 'Стан',
     genre: 'Жанр',
-    updating: 'Оновлення каталогу...',
     showResults: (n: number) => (n === 0 ? 'Нічого не знайдено' : `Показати ${books(n)}`),
   },
   book: {

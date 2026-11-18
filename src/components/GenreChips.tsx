@@ -10,7 +10,7 @@ const OPTIONS = ['', ...GENRES] as const
 /** One-tap genre filter for phones; scrolls sideways instead of wrapping. */
 export default function GenreChips() {
   const { t } = useI18n()
-  const { get, set, isPending } = useCatalogFilters()
+  const { get, set } = useCatalogFilters()
   const selected = get('genre')
 
   return (
@@ -22,7 +22,6 @@ export default function GenreChips() {
             <button
               key={genre || 'all'}
               onClick={() => set('genre', genre)}
-              disabled={isPending}
               aria-pressed={active}
               className={`h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap border transition-colors ${
                 active

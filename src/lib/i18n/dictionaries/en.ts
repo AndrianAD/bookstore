@@ -75,7 +75,6 @@ export const en: Dictionary = {
     reset: 'Reset',
     condition: 'Condition',
     genre: 'Genre',
-    updating: 'Updating catalog...',
     showResults: (n: number) => (n === 0 ? 'Nothing found' : `Show ${books(n)}`),
   },
   book: {

@@ -74,7 +74,6 @@ export const ru = {
     reset: 'Сбросить',
     condition: 'Состояние',
     genre: 'Жанр',
-    updating: 'Обновление каталога...',
     showResults: (n: number) => (n === 0 ? 'Ничего не найдено' : `Показать ${books(n)}`),
   },
   book: {

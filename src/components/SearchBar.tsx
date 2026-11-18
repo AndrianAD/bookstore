@@ -1,44 +1,43 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { updateCatalogUrl } from '@/lib/catalog-query'
 import { useI18n } from '@/lib/i18n/client'
 
-const DEBOUNCE_MS = 400
+const DEBOUNCE_MS = 200
 
-/** Always searches the catalog, so it works from any page that shows the site header. */
+/**
+ * On the catalog it filters in place; on any other page it opens the catalog with the term,
+ * so the same header search works everywhere.
+ */
 export default function SearchBar() {
   const { t } = useI18n()
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
   const current = searchParams.get('search') ?? ''
   const [value, setValue] = useState(current)
 
-  useEffect(() => setValue(current), [current])
+  // Keep what the user typed (including a trailing space) unless the URL changed for another reason.
+  useEffect(() => setValue((typed) => (typed.trim() === current ? typed : current)), [current])
 
   useEffect(() => {
-    if (value.trim() === current) return
+    const term = value.trim()
+    if (term === current) return
     const timer = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString())
-      if (value.trim()) params.set('search', value.trim())
-      else params.delete('search')
-      const query = params.toString()
-      startTransition(() => router.push(query ? `/?${query}` : '/', { scroll: false }))
+      if (pathname === '/') updateCatalogUrl(searchParams, { search: term || null }, 'replace')
+      else router.push(term ? `/?search=${encodeURIComponent(term)}` : '/')
     }, DEBOUNCE_MS)
     return () => clearTimeout(timer)
-  }, [value, current, router, searchParams])
+  }, [value, current, pathname, router, searchParams])
 
   return (
     <div className="relative group">
       <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
-        {isPending ? (
-          <div className="w-4 h-4 border-2 border-accent-400 border-t-transparent rounded-full animate-spin" />
-        ) : (
-          <svg className="w-4 h-4 text-gray-400 group-focus-within:text-accent-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        )}
+        <svg className="w-4 h-4 text-gray-400 group-focus-within:text-accent-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
       </div>
       <input
         type="search"

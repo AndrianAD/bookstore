@@ -1,6 +1,7 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { readCatalogQuery, updateCatalogUrl } from '@/lib/catalog-query'
 import { useI18n } from '@/lib/i18n/client'
 
 const OPTIONS = [
@@ -11,17 +12,12 @@ const OPTIONS = [
 ] as const
 
 export default function SortSelect() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const { t } = useI18n()
-  const current = searchParams.get('sort') ?? 'newest'
+  const current = readCatalogQuery(searchParams).sort
 
-  const handleChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (value === 'newest') params.delete('sort')
-    else params.set('sort', value)
-    router.push(`/?${params.toString()}`, { scroll: false })
-  }
+  const handleChange = (value: string) =>
+    updateCatalogUrl(searchParams, { sort: value === 'newest' ? null : value })
 
   return (
     <div className="relative w-[9.5rem] sm:w-auto">

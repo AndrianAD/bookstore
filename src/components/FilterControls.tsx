@@ -10,7 +10,7 @@ const GENRE_OPTIONS = ['', ...GENRES] as const
 
 export default function FilterControls({ filters }: { filters: CatalogFilters }) {
   const { t } = useI18n()
-  const { get, set, isPending } = filters
+  const { get, set } = filters
 
   return (
     <div className="space-y-6">
@@ -23,7 +23,6 @@ export default function FilterControls({ filters }: { filters: CatalogFilters })
             <button
               key={value || 'all'}
               onClick={() => set('condition', value)}
-              disabled={isPending}
               className={`h-8 rounded-full text-[13px] font-medium transition-all duration-150 ${
                 get('condition') === value ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
@@ -43,7 +42,6 @@ export default function FilterControls({ filters }: { filters: CatalogFilters })
             <button
               key={genre || 'all'}
               onClick={() => set('genre', genre)}
-              disabled={isPending}
               className={`h-8 px-3 rounded-full text-[13px] font-medium border transition-colors ${
                 get('genre') === genre
                   ? 'bg-gray-900 border-gray-900 text-white'
