@@ -107,19 +107,21 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
             {errors.author && <p className="mt-1 text-xs text-red-500">{errors.author}</p>}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="book-price" className="block text-sm font-medium text-gray-700 mb-1.5">
                 {t.bookForm.price} <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-2">
                 <input
+                  id="book-price"
                   type="number"
+                  inputMode="decimal"
                   min={1}
                   step={0.01}
                   value={form.price || ''}
                   onChange={(e) => set('price', parseFloat(e.target.value) || 0)}
-                  className={`input-field min-w-0 ${errors.price ? 'border-red-400 focus:ring-red-400' : ''}`}
+                  className={`input-field flex-1 min-w-[7rem] text-base font-semibold tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${errors.price ? 'border-red-400 focus:ring-red-400' : ''}`}
                   placeholder="0.00"
                 />
                 <div className="flex shrink-0 gap-1 p-1 bg-gray-100 rounded-full">
@@ -129,7 +131,7 @@ export default function BookForm({ initial, onSubmit, onCancel }: BookFormProps)
                       type="button"
                       onClick={() => set('currency', code)}
                       title={t.currencies[code]}
-                      className={`w-9 rounded-full text-base font-semibold transition-all duration-150 ${
+                      className={`w-10 rounded-full text-base font-semibold transition-all duration-150 ${
                         form.currency === code ? 'bg-white text-accent-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
