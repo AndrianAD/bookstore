@@ -23,38 +23,44 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-700 hover:to-accent-600
-           text-white font-semibold py-2.5 px-5 rounded-xl transition-all duration-200
-           shadow-sm hover:shadow-glow-sm active:scale-[0.98]
-           disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
+    @apply inline-flex items-center justify-center gap-2 h-10 px-5 rounded-full
+           bg-accent-600 hover:bg-accent-700 text-white text-sm font-semibold
+           transition-colors active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-5 rounded-xl
-           border border-gray-200 transition-all duration-200 hover:border-gray-300
-           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 h-10 px-4 rounded-full
+           bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium
+           border border-gray-200 hover:border-gray-300 transition-colors active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-5 rounded-xl
-           transition-all duration-200 active:scale-[0.98]
+    @apply inline-flex items-center justify-center gap-2 h-10 px-5 rounded-full
+           bg-red-600 hover:bg-red-700 text-white text-sm font-semibold
+           transition-colors active:scale-[0.98]
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-ghost {
-    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100 font-medium py-2 px-3
-           rounded-lg transition-all duration-150;
+    @apply inline-flex items-center gap-1.5 h-9 px-3 rounded-full text-sm font-medium
+           text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors;
   }
 
   .input-field {
-    @apply w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900
+    @apply w-full h-10 px-3.5 border border-gray-200 rounded-xl text-[15px] text-gray-900
            placeholder-gray-400 bg-white
-           focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent
-           transition-all duration-200 hover:border-gray-300;
+           focus:outline-none focus:ring-4 focus:ring-accent-100 focus:border-accent-300
+           transition-colors hover:border-gray-300;
+  }
+
+  textarea.input-field {
+    @apply h-auto py-2.5;
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-card overflow-hidden;
+    @apply bg-white rounded-2xl border border-gray-100 overflow-hidden;
   }
 
   .glass {

@@ -131,7 +131,6 @@ export const uk: Dictionary = {
   admin: {
     management: 'Керування',
     role: 'Адміністратор',
-    catalogSection: 'Каталог',
     books: 'Книги',
     orders: 'Замовлення',
     toShop: 'До магазину',
@@ -144,7 +143,6 @@ export const uk: Dictionary = {
     noBooks: 'Книги не знайдено',
     noBooksHint: 'Додайте першу книгу до каталогу',
     addBook: 'Додати книгу',
-    columns: { book: 'Книга', genre: 'Жанр', price: 'Ціна', actions: 'Дії' },
     addTitle: '+ Додати книгу',
     editTitle: 'Редагувати книгу',
     deleteTitle: 'Видалити книгу?',

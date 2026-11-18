@@ -131,7 +131,6 @@ export const en: Dictionary = {
   admin: {
     management: 'Management',
     role: 'Administrator',
-    catalogSection: 'Catalog',
     books: 'Books',
     orders: 'Orders',
     toShop: 'To the shop',
@@ -144,7 +143,6 @@ export const en: Dictionary = {
     noBooks: 'No books found',
     noBooksHint: 'Add the first book to the catalog',
     addBook: 'Add book',
-    columns: { book: 'Book', genre: 'Genre', price: 'Price', actions: 'Actions' },
     addTitle: '+ Add book',
     editTitle: 'Edit book',
     deleteTitle: 'Delete this book?',

@@ -50,7 +50,7 @@ export default function MobileFilters({ resultsCount }: MobileFiltersProps) {
         </div>
 
         <div className="border-t border-gray-100 px-5 py-4 shrink-0">
-          <button onClick={close} className="btn-primary w-full py-3 text-sm">
+          <button onClick={close} className="btn-primary w-full h-12">
             {t.filters.showResults(resultsCount)}
           </button>
         </div>

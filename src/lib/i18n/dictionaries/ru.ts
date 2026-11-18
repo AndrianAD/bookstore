@@ -130,7 +130,6 @@ export const ru = {
   admin: {
     management: 'Управление',
     role: 'Администратор',
-    catalogSection: 'Каталог',
     books: 'Книги',
     orders: 'Заказы',
     toShop: 'В магазин',
@@ -143,7 +142,6 @@ export const ru = {
     noBooks: 'Книги не найдены',
     noBooksHint: 'Добавьте первую книгу в каталог',
     addBook: 'Добавить книгу',
-    columns: { book: 'Книга', genre: 'Жанр', price: 'Цена', actions: 'Действия' },
     addTitle: '+ Добавить книгу',
     editTitle: 'Редактировать книгу',
     deleteTitle: 'Удалить книгу?',

@@ -251,3 +251,8 @@ Deployed to Vercel.
   cards are lighter (hairline border, badges only for used or sold books, round cart button),
   and Inter is loaded through `next/font` with Cyrillic. Tailwind now also scans `src/lib`,
   where shared class maps such as `genre-style.ts` live.
+- **Admin redesign.** Both admin pages render inside `AdminShell`: a light sidebar on desktop, and on
+  phones a compact top bar (language, log out) plus a bottom tab bar (Books / Orders / Shop), which
+  also fixes the missing navigation to Orders on phones. Books and orders are card lists instead of
+  tables, the book form opens in `Dialog` (a bottom sheet on phones), and the order details open in
+  the shared `Drawer`. Global buttons and inputs use solid colors and pill shapes.

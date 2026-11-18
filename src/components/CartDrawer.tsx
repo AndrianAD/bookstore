@@ -194,7 +194,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 </div>
                 <button
                   onClick={() => setStep('checkout')}
-                  className="btn-primary w-full py-3 text-sm"
+                  className="btn-primary w-full h-12"
                 >
                   {t.cart.buyInOneClick}
                 </button>
@@ -217,7 +217,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   value={phone}
                   onChange={(e) => setPhone(formatPhone(e.target.value))}
                   placeholder="+33 6 12 34 56 78"
-                  className="input-field text-base py-3"
+                  className="input-field h-12 text-base"
                   autoFocus
                   inputMode="tel"
                 />
@@ -235,7 +235,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t.cart.namePlaceholder}
-                  className="input-field text-base py-3"
+                  className="input-field h-12 text-base"
                 />
               </div>
 
@@ -272,7 +272,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               <button
                 type="submit"
                 disabled={!isPhoneValid || submitting}
-                className="btn-primary w-full py-3 text-sm"
+                className="btn-primary w-full h-12"
               >
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">

@@ -8,10 +8,11 @@ import { saveSiteLocale } from '@/lib/settings/site-settings'
 import { createClient } from '@/lib/supabase/client'
 
 interface LanguageSwitcherProps {
-  className?: string
+  /** Without the label and with short codes, for the mobile top bar. */
+  compact?: boolean
 }
 
-export default function LanguageSwitcher({ className = '' }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({ compact = false }: LanguageSwitcherProps) {
   const router = useRouter()
   const { locale, t } = useI18n()
   const [isPending, startTransition] = useTransition()
@@ -26,19 +27,28 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
     }
   }
 
+  const select = (
+    <select
+      value={locale}
+      disabled={isPending}
+      aria-label={t.admin.language}
+      onChange={(e) => handleChange(e.target.value)}
+      className={`rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-4 focus:ring-accent-100 focus:border-accent-300 disabled:opacity-60 ${
+        compact ? 'h-9 px-3' : 'w-full h-9 px-3'
+      }`}
+    >
+      {LOCALE_CODES.map((code) => (
+        <option key={code} value={code}>{compact ? code.toUpperCase() : LOCALES[code].label}</option>
+      ))}
+    </select>
+  )
+
+  if (compact) return select
+
   return (
-    <label className={`flex flex-col gap-1.5 ${className}`}>
-      <span className="text-xs font-semibold uppercase tracking-wider opacity-60">{t.admin.language}</span>
-      <select
-        value={locale}
-        disabled={isPending}
-        onChange={(e) => handleChange(e.target.value)}
-        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-300 disabled:opacity-60"
-      >
-        {LOCALE_CODES.map((code) => (
-          <option key={code} value={code}>{LOCALES[code].label}</option>
-        ))}
-      </select>
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{t.admin.language}</span>
+      {select}
     </label>
   )
 }
