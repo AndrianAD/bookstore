@@ -246,3 +246,8 @@ Deployed to Vercel.
 - **Stock and ordering through the bot.** Book quantity with "Sold" state and automatic removal of the
   channel post at 0; the channel "Order" button opens the bot, which takes the phone number and creates
   the order (migrations 07 and 08).
+- **Mobile-first redesign.** The hero banner is gone; search lives in a compact sticky header
+  (`SiteHeader`) shared by the catalog and book pages. Genres are a swipeable chip row on phones,
+  cards are lighter (hairline border, badges only for used or sold books, round cart button),
+  and Inter is loaded through `next/font` with Cyrillic. Tailwind now also scans `src/lib`,
+  where shared class maps such as `genre-style.ts` live.
