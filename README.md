@@ -190,6 +190,7 @@ src/
 │   ├── types.ts                    # Book, Order, CartItem, genres, condition and stock helpers
 │   ├── money.ts                    # Currencies, price formatting, per-currency totals
 │   ├── cart.ts                     # Browser cart (localStorage), capped by stock
+│   ├── catalog-query.ts            # Reads the catalog URL, filters/sorts books in the browser, updates the URL
 │   ├── use-catalog-filters.ts      # Filter state in the URL (condition, genre)
 │   ├── i18n/                       # Locales, typed dictionaries (ru is the reference), server/client access
 │   ├── settings/site-settings.ts   # Read/save the site language
@@ -221,7 +222,8 @@ Conventions:
 - Sorting by price compares numbers only, so 100 ₴ sorts above 50 €.
 - `orders.total` is a plain sum across currencies; the UI computes per-currency totals from items instead.
 - Stock is not decreased automatically when an order is placed; the admin edits it.
-- No pagination: the catalog loads every book.
+- No pagination: the catalog loads every book once and filters in the browser. That keeps filters
+  instant for a small shop; with many hundreds of books, move filtering back to the server and paginate.
 - No ESLint config and no tests.
 
 ---
@@ -256,3 +258,7 @@ Deployed to Vercel.
   also fixes the missing navigation to Orders on phones. Books and orders are card lists instead of
   tables, the book form opens in `Dialog` (a bottom sheet on phones), and the order details open in
   the shared `Drawer`. Global buttons and inputs use solid colors and pill shapes.
+- **Instant filters.** Filter taps used to wait about a second for a new server render. The catalog
+  page now loads all books once; `CatalogView` filters, sorts, and searches in the browser and writes
+  the URL with `history.pushState` / `replaceState`, which Next.js syncs into `useSearchParams`.
+  A tap now updates the page in about 10 ms with no server request.
